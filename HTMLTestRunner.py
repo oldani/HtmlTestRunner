@@ -98,8 +98,8 @@ import jinja2
 from xml.sax import saxutils
 from unittest.runner import TextTestResult
 
-plantillas_dir = os.path.join(os.path.dirname(__file__), 'plantilla')
-jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(plantillas_dir))
+template_dir = os.path.join(os.path.dirname(__file__), 'template')
+jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir))
 
 def render_html(template, **kw):
     loadedTem = jinja_env.get_template(template)
@@ -313,10 +313,14 @@ class HTMLTestRunner(Template_mixin):
         startTime = str(self.startTime)[:19]
         duration = str(self.stopTime - self.startTime)[:7]
         status = []
-        if result.success_count: status.append('Pass: %s'    % result.success_count)
-        if result.failure_count: status.append('Failure: %s' % result.failure_count)
-        if result.error_count:   status.append('Error: %s'   % result.error_count  )
-        if result.skip_count : status.append('Skip: %s' % result.skip_count)
+        if result.success_count:
+            status.append('Pass: %s'    % result.success_count)
+        if result.failure_count:
+            status.append('Failure: %s' % result.failure_count)
+        if result.error_count:
+            status.append('Error: %s'   % result.error_count  )
+        if result.skip_count :
+            status.append('Skip: %s' % result.skip_count)
         if status:
             status = ', '.join(status)
         else:
@@ -326,6 +330,16 @@ class HTMLTestRunner(Template_mixin):
             ('Duration', duration),
             ('Status', status),
         ]
+
+    def generate_file(self, report):
+        current_dir = os.getcwd()
+        dir_to = os.path.join(current_dir, 'reports', self.output)
+        if not os.path.exists(dir_to):
+            os.makedirs(dir_to)
+        report_name = '_'.join([self.test_name, time.strftime("%Y%m%d%H%M%S")]) + ".html"
+        path_file = os.path.join(dir_to, report_name)
+        output_file = open(path_file, "w")
+        output_file.write(report)
 
     def generateReport(self, test, result):
         report_attrs = self.getReportAttributes(result)
@@ -338,14 +352,7 @@ class HTMLTestRunner(Template_mixin):
             reportAll = reportAll,
             reportCases = reportCases
         )
-        current_dir = os.getcwd()
-        dir_to = os.path.join(current_dir, 'reports', self.output)
-        if not os.path.exists(dir_to):
-            os.makedirs(dir_to)
-        report_name = '_'.join([self.test_name, time.strftime("%Y%m%d%H%M%S")]) + ".html"
-        path_file = os.path.join(dir_to, report_name)
-        output_file = open(path_file, "w")
-        output_file.write(output)
+        self.generate_file(output)
 
     def _generate_report(self, result):
         rows = []
@@ -356,10 +363,14 @@ class HTMLTestRunner(Template_mixin):
             # subtotal for a class
             np = ns = nf = ne = 0
             for n,t,o,e in cls_results:
-                if n == 0: np += 1
-                elif n == 3: ns += 1
-                elif n == 1: nf += 1
-                else: ne += 1
+                if n == 0:
+                    np += 1
+                elif n == 3:
+                    ns += 1
+                elif n == 1:
+                    nf += 1
+                else:
+                    ne += 1
 
             # format class description
             if cls.__module__ == "__main__":
