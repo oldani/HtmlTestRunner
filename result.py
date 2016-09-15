@@ -289,8 +289,7 @@ class _HtmlTestResult(_TextTestResult):
         html_file = render_html('report_template.html', title=report_name,
                                 header=report_header, class_name=class_name,
                                 reportCases=test_cases_list, total_test=total_test)
-        return html_file
-            
+        return html_file            
 
     def generate_reports(self, testRunner):
         """ Generate report for all given runned test object. """
