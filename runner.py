@@ -1,8 +1,9 @@
 import sys
 import time
+from datetime import datetime
 
-from unittests import TextTestRunner
-from result import _TestResult
+from unittest import TextTestRunner
+from result import _HtmlTestResult
 
 UTF8 = "UTF-8"
 
@@ -10,9 +11,9 @@ UTF8 = "UTF-8"
 class HTMLTestRunner(TextTestRunner):
     """" A test runner class that output the results. """
 
-    def __init__(self, output, verbosity=1, stream=sys.stderr,
+    def __init__(self, output, verbosity=2, stream=sys.stderr,
                  descriptions=True, failfast=False, buffer=False,
-                 resultclass=None):
+                 resultclass=None, report_title=None):
         self.verbosity = verbosity
         self.output = output
         self.encoding = UTF8
@@ -20,12 +21,14 @@ class HTMLTestRunner(TextTestRunner):
         TextTestRunner.__init__(self, stream, descriptions, verbosity,
                                 failfast=failfast, buffer=buffer)
 
-        self.outsuffix = time.strftime("%Y%m%d%H%M%S")
+        self.outsuffix = time.strftime("%Y-%m-%d_%H-%M")
         self.elapsed_times = True
         if resultclass is None:
-            self.resultclass = _TestResult
+            self.resultclass = _HtmlTestResult
         else:
             self.resultclass = resultclass
+
+        self.report_title = report_title or "Test Result"
 
     def _make_result(self):
         """ Create a TestResult object which will be used to store
@@ -47,16 +50,16 @@ class HTMLTestRunner(TextTestRunner):
             self.stream.writeln("Running tests... ")
             self.stream.writeln(result.separator2)
 
-            start_time = time.time()
+            self.start_time = datetime.now()
             test(result)
-            stop_time = time.time()
-            time_taken = stop_time - start_time
+            stop_time = datetime.now()
+            self.time_taken = stop_time - self.start_time
 
             result.printErrors()
             self.stream.writeln(result.separator2)
-            run = result.testRun
-            self.stream.writeln("Ran {} test{} in {:.3f}s".format(run,
-                                run != 1 and "s" or "", time_taken))
+            run = result.testsRun
+            self.stream.writeln("Ran {} test{} in {}".format(run,
+                                run != 1 and "s" or "", str(self.time_taken)[:5]))
             self.stream.writeln()
 
             expectedFails = len(result.expectedFailures)
@@ -68,14 +71,14 @@ class HTMLTestRunner(TextTestRunner):
                 self.stream.writeln("FAILED")
                 failed, errors = map(len, (result.failures, result.errors))
                 if failed:
-                    infos.append("failures={0}".format(failed))
+                    infos.append("Failures={0}".format(failed))
                 if errors:
-                    infos.append("errors={0}".format(errors))
+                    infos.append("Errors={0}".format(errors))
             else:
                 self.stream.writeln("OK")
 
             if skipped:
-                infos.append("skipped={}".format(skipped))
+                infos.append("Skipped={}".format(skipped))
             if expectedFails:
                 infos.append("expected failures={}".format(expectedFails))
             if unexpectedSuccesses:
