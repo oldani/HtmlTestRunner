@@ -22,7 +22,6 @@
                     </p>
                 {% endfor %}
             </div>
-            
         </div>
         <div class="row">
             <div class="col-xs-12 col-sm-10 col-md-10">
@@ -31,7 +30,7 @@
                         <tr>
                             <th>{{class_name}}</th>
                             <th>Status</th>
-                        </tr> 
+                        </tr>
                     </thead>
                     <tbody>
                         {% for eachTestCase, status, errorType, errorMessage in reportCases %}
@@ -48,7 +47,6 @@
                                         {% else %}
                                             Error
                                         {% endif %}
-
                                     </span>
                                     {% if "success" not in status %}
                                         &nbsp<button class="btn btn-default btn-xs">View</button>
@@ -60,13 +58,10 @@
                                     <td class="col-xs-9">
                                         <p>{{errorType}}</p>
                                         <p>{{errorMessage}}</p>
-                                        
                                     </td> 
                                 </tr>
                             {% endif %}
-
                         {% endfor %}
-                        
                         <tr>
                             <td>
                                Total Test Runned: {{total_test}}
@@ -75,13 +70,9 @@
                                 {% for value in header[2][1] %}
                                     <span class="col-xs-3">{{value}}</span>
                                 {% endfor %}
-                                
                             </td>
-
-                            
                         </tr>
                     </tbody>
-                    
                 </table>
             </div>
         </div>
@@ -89,7 +80,6 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function(){
-
             $('td').on('click', '.btn', function(e){
                 e.preventDefault();
                 var $this = $(this);
