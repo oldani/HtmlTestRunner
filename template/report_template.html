@@ -4,51 +4,36 @@
     <title>{{title}}</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="generator" content="{{generator}}"/>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
-    <style type="text/css">
-        .pass {
-            border: #5cb85c 1px solid;
-            padding: 4px; 
-        }
-
-        .fail {
-            border: #d9534f 1px solid;
-            padding: 4px;
-        }
-
-        .error {
-            border: #f0ad4e 1px solid;
-            padding: 4px;
-        }
-        .skip {
-            border: #5bc0de 1px solid;
-            padding: 4px;
-        }
-    </style>
 </head>
 <body>
     <div class="container">
         <div class="row">
             <div class="col-xs-12">
                 <h2 class="text-capitalize">{{title}}</h2>
-                {% for name, value in parameters %}
-                    <p class='attribute'><strong>{{name}}:</strong> {{value}}</p>
+                {% for name, value in header %}
+                    <p class='attribute'>
+                        <strong>{{name}}:</strong>
+                        {% if name == 'Status'%} 
+                            {{ value|join(', ') }}
+                        {% else %}
+                            {{value}}
+                        {% endif %}
+                    </p>
                 {% endfor %}
             </div>
-            
         </div>
         <div class="row">
             <div class="col-xs-12 col-sm-10 col-md-10">
                 <table class='table table-hover table-responsive'>
                     <thead>
                         <tr>
-                            <th>{{reportAll.testName}}</th>
+                            <th>{{class_name}}</th>
                             <th>Status</th>
-                        </tr> 
+                        </tr>
                     </thead>
                     <tbody>
-                        {% for eachTestCase, status, traceBack in reportCases %}
+                        {% for eachTestCase, status, errorType, errorMessage in reportCases %}
                             <tr class='{{status}}'>
                                 <td class="col-xs-9">{{eachTestCase}}</td>
                                 <td class="col-xs-3">
@@ -62,7 +47,6 @@
                                         {% else %}
                                             Error
                                         {% endif %}
-
                                     </span>
                                     {% if "success" not in status %}
                                         &nbsp<button class="btn btn-default btn-xs">View</button>
@@ -71,27 +55,24 @@
                             </tr>
                             {% if "success" not in status %}
                                 <tr style="display:none;">
-                                    <td class="col-xs-9">{{traceBack}} </td> 
+                                    <td class="col-xs-9">
+                                        <p>{{errorType}}</p>
+                                        <p>{{errorMessage}}</p>
+                                    </td> 
                                 </tr>
                             {% endif %}
-
                         {% endfor %}
-                        
                         <tr>
                             <td>
-                               Total Test Runned: {{reportAll.total}}
+                               Total Test Runned: {{total_test}}
                             </td>
                             <td class="row">
-                                <span class="pass col-xs-3">Pass {{reportAll.pass}}</span>
-                                <span class="skip col-xs-3">Skip {{reportAll.skip}}</span>
-                                <span class="fail col-xs-3">Fail {{reportAll.fail}}</span>
-                                <span class="error col-xs-3">Error {{reportAll.error}}</span>
+                                {% for value in header[2][1] %}
+                                    <span class="col-xs-3">{{value}}</span>
+                                {% endfor %}
                             </td>
-
-                            
                         </tr>
                     </tbody>
-                    
                 </table>
             </div>
         </div>
@@ -99,7 +80,6 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function(){
-
             $('td').on('click', '.btn', function(e){
                 e.preventDefault();
                 var $this = $(this);
