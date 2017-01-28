@@ -3,7 +3,7 @@ import time
 from datetime import datetime
 
 from unittest import TextTestRunner
-from result import _HtmlTestResult
+from .result import _HtmlTestResult
 
 UTF8 = "UTF-8"
 
