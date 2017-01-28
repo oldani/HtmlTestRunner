@@ -53,3 +53,10 @@ if __name__ == '__main__':
 ````
 As simple as import the class an initialize it, it only have one request parameter that is
 output, this one is use to place the report in a sub direcotry in `reports` directory.
+
+**Console output:**
+---
+
+![console output](console_output.png "console output")
+
+This is waht you got in the console.
