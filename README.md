@@ -59,4 +59,15 @@ output, this one is use to place the report in a sub direcotry in `reports` dire
 
 ![console output](console_output.png "console output")
 
-This is waht you got in the console.
+This is what you got in the console.
+
+**Test Result:**
+---
+
+![Test result template](test_results.gif "test results")
+
+This is a sample of the template that came by default with the runner. If you want<br/>
+to customize it or use a new one just replace the template in the template folder,<br/>
+the runner use jinja to render the template, so take in account the vars that are<br/>
+being pass to the template.
+
