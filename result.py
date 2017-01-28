@@ -2,7 +2,6 @@ import os
 import sys
 import time
 import traceback
-import re
 import jinja2
 
 from unittest import TestResult, _TextTestResult
@@ -10,6 +9,7 @@ from unittest.result import failfast
 
 template_dir = os.path.join(os.path.dirname(__file__), 'template')
 jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir))
+
 
 def render_html(template, **kw):
     loaded_template = jinja_env.get_template(template)
@@ -80,7 +80,7 @@ class _HtmlTestResult(_TextTestResult):
 
     def _prepare_callback(self, test_info, target_list, verbose_str,
                           short_str):
-        """ Appends a 'info class' to teh given target list and sets a 
+        """ Appends a 'info class' to the given target list and sets a
             callback method to be called by stopTest method."""
         target_list.append(test_info)
 
@@ -188,7 +188,7 @@ class _HtmlTestResult(_TextTestResult):
             self.stream.writeln(self.separator1)
             self.stream.writeln(
                 '{} [{:3f}s]: {}'.format(flavour, test_info.elapsed_time,
-                                    test_info.get_description())
+                                         test_info.get_description())
             )
             self.stream.writeln(self.separator2)
             self.stream.writeln('%s' % test_info.get_error_info())
@@ -238,7 +238,7 @@ class _HtmlTestResult(_TextTestResult):
         return test_id.split('.')[-1]
 
     def _report_testcase(self, testCase, test_cases_list):
-        """ Return a list with test name or desciption, status and error 
+        """ Return a list with test name or desciption, status and error
             msg if fail or skip. """
         test_name = self._test_method_name(testCase.test_id)
         test_description = testCase.test_description
@@ -280,7 +280,7 @@ class _HtmlTestResult(_TextTestResult):
         class_name = suite_name.split("_")[1]
         test_cases_list = []
 
-        #Sort test by number if they have
+        # Sort test by number if they have
         tests = self.sort_test_list(tests)
 
         for test in tests:
@@ -288,8 +288,9 @@ class _HtmlTestResult(_TextTestResult):
 
         html_file = render_html('report_template.html', title=report_name,
                                 header=report_header, class_name=class_name,
-                                reportCases=test_cases_list, total_test=total_test)
-        return html_file            
+                                reportCases=test_cases_list,
+                                total_test=total_test)
+        return html_file
 
     def generate_reports(self, testRunner):
         """ Generate report for all given runned test object. """
@@ -298,7 +299,8 @@ class _HtmlTestResult(_TextTestResult):
         for suite_name, all_tests in all_results.items():
 
             if testRunner.outsuffix:
-                suite_name = "Test_{}_{}.html".format(suite_name, testRunner.outsuffix)
+                suite_name = "Test_{}_{}.html".format(suite_name,
+                                                      testRunner.outsuffix)
 
             test_suite = self._report_suite(suite_name, all_tests, testRunner)
             self.generate_file(testRunner.output, suite_name, test_suite)
@@ -318,7 +320,7 @@ class _HtmlTestResult(_TextTestResult):
         # if six.PY3:
         #     # It works fine in python 3
         #     try:
-        #         return super(_XMLTestResult, self)._exc_info_to_string(
+        #         return super(_HTMLTestResult, self)._exc_info_to_string(
         #             err, test)
         #     except AttributeError:
         #         # We keep going using the legacy python <= 2 way
@@ -351,11 +353,11 @@ class _HtmlTestResult(_TextTestResult):
             if output:
                 if not output.endswith('\n'):
                     output += '\n'
-                msgLines.append(STDOUT_LINE % output)
+                msgLines.append(output)
             if error:
                 if not error.endswith('\n'):
                     error += '\n'
-                msgLines.append(STDERR_LINE % error)
+                msgLines.append(error)
         # This is the extra magic to make sure all lines are str
         encoding = getattr(sys.stdout, 'encoding', 'utf-8')
         lines = []
