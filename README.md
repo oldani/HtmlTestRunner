@@ -17,7 +17,9 @@ incorporated code from both projects but up to date.
 import HtmlTestRunner
 import unittest
 
+
 class TestStringMethods(unittest.TestCase):
+    """ Example test for HtmlRunner. """
 
     def test_upper(self):
         self.assertEqual('foo'.upper(), 'FOO')
@@ -32,6 +34,19 @@ class TestStringMethods(unittest.TestCase):
         # check that s.split fails when the separator is not a string
         with self.assertRaises(TypeError):
             s.split(2)
+
+    def test_error(self):
+        """ This test should be marked as error one. """
+        raise ValueError
+
+    def test_fail(self):
+        """ This test should fail. """
+        self.assertEqual(1, 2)
+
+    @unittest.skip("This is a skipped test.")
+    def test_skip(self):
+        """ This test should be skipped. """
+        pass
 
 if __name__ == '__main__':
     unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(output='example_dir'))
