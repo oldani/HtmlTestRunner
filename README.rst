@@ -3,8 +3,8 @@ HtmlTestRunner
 ===============================
 
 
-.. image:: https://img.shields.io/pypi/v/HtmlTestRunner.svg
-        :target: https://pypi.python.org/pypi/HtmlTestRunner
+.. image:: https://img.shields.io/pypi/v/html-testRunner.svg
+        :target: https://pypi.python.org/pypi/html-testRunner
 
 .. image:: https://img.shields.io/travis/oldani/HtmlTestRunner.svg
         :target: https://travis-ci.org/oldani/HtmlTestRunner

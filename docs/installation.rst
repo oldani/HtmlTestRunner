@@ -12,7 +12,7 @@ To install HtmlTestRunner, run this command in your terminal:
 
 .. code-block:: console
 
-    $ pip install HtmlTestRunner
+    $ pip install html-testRunner
 
 This is the preferred method to install HtmlTestRunner, as it will always install the most recent stable release. 
 
