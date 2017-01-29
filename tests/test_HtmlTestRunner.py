@@ -12,7 +12,7 @@ Tests for `HtmlTestRunner` module.
 import sys
 import unittest
 
-from HtmlTestRunner import HtmlTestRunner
+import HtmlTestRunner
 
 
 
