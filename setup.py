@@ -35,9 +35,9 @@ setup(
     install_requires=requirements,
     license="MIT license",
     zip_safe=False,
-    keywords='HtmlTestRunner, TestRunner, Html Reports',
+    keywords='HtmlTestRunner TestRunner Html Reports',
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
