@@ -17,3 +17,8 @@ History
 -----------------------
 
 * Fix broken docs.
+
+1.0.3 (2017-01-29)
+-----------------------
+
+* Fix bug with the template not beign include in the package.
