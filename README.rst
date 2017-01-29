@@ -23,7 +23,6 @@ but i liked how ``xml-reporting`` works. So i create this one that
 incorporated code from both projects but up to date.
 
 
---------------
 Usage:
 --------------
 
@@ -69,7 +68,6 @@ Usage:
 As simple as import the class an initialize it, it only have one request parameter that is output, this one is use to place the report in a sub direcotry in ``reports`` directory.
 
 
------------------
 Console output:
 -----------------
 
@@ -79,7 +77,6 @@ Console output:
     This is what you got in the console.
 
 
-------------------
 Test Result:
 ------------------
 
