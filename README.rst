@@ -19,8 +19,24 @@ This Package was inspired in ``unittest-xml-reporting`` and
 
 This project was created due to needs of getting human readables reports 
 for test runned, i found one but was lack and with a lot of bad practice,
-but i liked how ``xml-reporting`` works. So i create this one that 
-incorporated code from both projects but up to date.
+but i liked how ``xml-reporting`` works. So I created this one that 
+incorporates code from both projects but up to date.
+
+Installation
+############
+Download the package .whl file from: `PyPI <https://pypi.python.org/pypi/html-testRunner#downloads>`_
+
+If you're using Windows:
+        Open a console window and change directory to where you've downloaded your .whl file.
+        
+        Use:
+        ::
+                pip install some-package.whl
+        
+More details at: `How do I install a Python package with a .whl file? <http://stackoverflow.com/a/27909082/3521406>`_
+                
+
+
 
 
 Usage:
