@@ -94,10 +94,10 @@ being pass to the template.
 
 ## TODO
 
-- [] Add Test
-- [] Improve documentation
-- [] Add custom templates
-- [] Add xml results
+- [ ] Add Test
+- [ ] Improve documentation
+- [ ] Add custom templates
+- [ ] Add xml results
 
 ## Credits
 
