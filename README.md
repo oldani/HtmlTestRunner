@@ -1,13 +1,8 @@
-===============================
-HtmlTestRunner
-===============================
+# HtmlTestRunner
 
 
-.. image:: https://img.shields.io/pypi/v/html-testRunner.svg
-        :target: https://pypi.python.org/pypi/html-testRunner
-
-.. image:: https://img.shields.io/travis/oldani/HtmlTestRunner.svg
-        :target: https://travis-ci.org/oldani/HtmlTestRunner
+[![Pypi link](https://img.shields.io/pypi/v/html-testRunner.svg)](https://pypi.python.org/pypi/html-testRunner)
+[![Travis job](https://img.shields.io/travis/oldani/HtmlTestRunner.svg)](https://travis-ci.org/oldani/HtmlTestRunner)
 
 
 
@@ -22,11 +17,21 @@ for test runned, i found one but was lack and with a lot of bad practice,
 but i liked how ``xml-reporting`` works. So i create this one that 
 incorporated code from both projects but up to date.
 
+## Table of Content
 
-Usage:
---------------
+- [Intallation](#intallation)
+- [Usage](#usage)
+- [Console Output](#console-output)
+- [Test Results](#test-result)
+- [Todo](#todo)
+- [Credits](#credits)
 
-.. code-block:: python
+## Installation
+
+
+## Usage:
+
+```python
 
     import HtmlTestRunner
     import unittest
@@ -64,42 +69,40 @@ Usage:
 
     if __name__ == '__main__':
         unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(output='example_dir'))
+```
 
 As simple as import the class an initialize it, it only have one request parameter that is output, this one is use to place the report in a sub direcotry in ``reports`` directory.
 
 
-Console output:
------------------
+## Console output:
 
-.. figure:: docs/console_output.png
-    :alt: Console output
+![Console output](docs/console_output.png)
 
-    This is what you got in the console.
+This is what you got in the console.
 
 
-Test Result:
-------------------
+## Test Result:
 
-.. figure:: docs/test_results.gif
-    :alt: Test Results
+![Test Results](docs/test_results.gif)
 
-    This is a sample of the template that came by default with the runner. If you want
-    to customize it or use a new one just replace the template in the template folder,
-    the runner use jinja to render the template, so take in account the vars that are
-    being pass to the template.
+This is a sample of the template that came by default with the runner. If you want
+to customize it or use a new one just replace the template in the template folder,
+the runner use jinja to render the template, so take in account the vars that are
+being pass to the template.
 
 
 
-TODO
---------
+## TODO
 
-* Add test and docs
+- [] Add Test
+- [] Improve documentation
+- [] Add custom templates
+- [] Add xml results
 
-Credits
----------
+## Credits
 
-This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
+This package was created with Cookiecutter and the `audreyr/cookiecutter-pypackage` project template.
 
-.. _Cookiecutter: https://github.com/audreyr/cookiecutter
-.. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
+- [Cookiecutter](https://github.com/audreyr/cookiecutter)
+- [audreyr/cookiecutter-pypackage](https://github.com/audreyr/cookiecutter-pypackage)
 
