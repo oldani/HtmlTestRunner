@@ -19,7 +19,7 @@ incorporated code from both projects but up to date.
 
 ## Table of Content
 
-- [Intallation](#intallation)
+- [Intallation](#installation)
 - [Usage](#usage)
 - [Console Output](#console-output)
 - [Test Results](#test-result)
@@ -27,6 +27,17 @@ incorporated code from both projects but up to date.
 - [Credits](#credits)
 
 ## Installation
+
+
+To install HtmlTestRunner, run this command in your terminal:
+
+```batch
+
+    $ pip install html-testRunner
+```
+
+This is the preferred method to install HtmlTestRunner, as it will always install the most recent stable release. If you don't have [pip](https://pip.pypa.io) installed, this [Python installation guide](http://docs.python-guide.org/en/latest/starting/installation/) can guide
+you through the process.
 
 
 ## Usage:
@@ -71,24 +82,42 @@ incorporated code from both projects but up to date.
         unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(output='example_dir'))
 ```
 
-As simple as import the class an initialize it, it only have one request parameter that is output, this one is use to place the report in a sub direcotry in ``reports`` directory.
+Just import `HtmlTestRunner` from package, then pass it to `unittest.main` with the `testRunner` keyword. This class have only one required parameter, with is `output` this is use to place the report of the TestCase, this is saved under a reports directory.
+
+
+For does who have `test suites` it works too, just create a runner instance and call the run method with your suite. Here an example:
+
+```python
+
+from unittest import TestLoader, TestSuite
+from HtmlTestRunner import HtmlTestRunner
+import ExampleTest
+import Example2Test
+
+example_tests = TestLoader().loadTestsFromTestCase(ExampleTests)
+example2_tests = TestLoader().loadTestsFromTestCase(Example2Test)
+
+suite = TestSuite([example_tests, example2_tests])
+
+runner = HtmlTestRunner(output='example_suite')
+
+runner.run(suite)
+
+```
 
 
 ## Console output:
 
 ![Console output](docs/console_output.png)
 
-This is what you got in the console.
+This is an example of what you got in the console.
 
 
 ## Test Result:
 
 ![Test Results](docs/test_results.gif)
 
-This is a sample of the template that came by default with the runner. If you want
-to customize it or use a new one just replace the template in the template folder,
-the runner use jinja to render the template, so take in account the vars that are
-being pass to the template.
+This is a sample of the template that came by default with the runner. If you want to customize it or use a new one just replace the template in the template folder, the runner use jinja to render the template, so take in account the vars that are being pass to the template.
 
 
 
@@ -98,6 +127,7 @@ being pass to the template.
 - [ ] Improve documentation
 - [ ] Add custom templates
 - [ ] Add xml results
+- [ ] Add support for Python2.7
 
 ## Credits
 
