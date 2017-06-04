@@ -24,6 +24,7 @@ incorporated code from both projects but up to date.
 - [Console Output](#console-output)
 - [Test Results](#test-result)
 - [Todo](#todo)
+- [Contributing](#contributing)
 - [Credits](#credits)
 
 ## Installation
@@ -128,6 +129,13 @@ This is a sample of the template that came by default with the runner. If you wa
 - [ ] Add custom templates
 - [ ] Add xml results
 - [ ] Add support for Python2.7
+
+## Contributing
+
+Contributions are welcome, and they are greatly appreciated! Every
+little bit helps, and credit will always be given.
+
+For more info please click [here](./CONTRIBUTING.md)
 
 ## Credits
 
