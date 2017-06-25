@@ -2,18 +2,38 @@ import os
 import sys
 import time
 import traceback
-import jinja2
-
 from unittest import TestResult, _TextTestResult
 from unittest.result import failfast
 
-template_dir = os.path.join(os.path.dirname(__file__), 'template')
-jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir))
+from jinja2 import Template
 
 
-def render_html(template, **kw):
-    loaded_template = jinja_env.get_template(template)
-    return loaded_template.render(**kw)
+DEFAULT_TEMPLATE = os.path.join(os.path.dirname(__file__), "template",
+                                "report_template.html")
+
+
+def load_template(template):
+    """ Try to read a file from a given path, if file
+        does not exist, load default one. """
+    file = None
+    try:
+        with open(template, "r") as f:
+            file = f.read()
+    except (FileNotFoundError, TypeError) as err:
+        if template:
+            print("Error: Your Template wasn't loaded", err,
+                  "Loading Default Template", sep="\n")
+        with open(DEFAULT_TEMPLATE, "r") as f:
+            file = f.read()
+    finally:
+        return file
+
+
+def render_html(template, **kwargs):
+    template_file = load_template(template)
+    if template_file:
+        template = Template(template_file)
+        return template.render(**kwargs)
 
 
 def testcase_name(test_method):
@@ -286,7 +306,7 @@ class _HtmlTestResult(_TextTestResult):
         for test in tests:
             self._report_testcase(test, test_cases_list)
 
-        html_file = render_html('report_template.html', title=report_name,
+        html_file = render_html(testRunner.template, title=report_name,
                                 header=report_header, class_name=class_name,
                                 reportCases=test_cases_list,
                                 total_test=total_test)
