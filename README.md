@@ -90,19 +90,19 @@ For does who have `test suites` it works too, just create a runner instance and 
 
 ```python
 
-from unittest import TestLoader, TestSuite
-from HtmlTestRunner import HtmlTestRunner
-import ExampleTest
-import Example2Test
+    from unittest import TestLoader, TestSuite
+    from HtmlTestRunner import HtmlTestRunner
+    import ExampleTest
+    import Example2Test
 
-example_tests = TestLoader().loadTestsFromTestCase(ExampleTests)
-example2_tests = TestLoader().loadTestsFromTestCase(Example2Test)
+    example_tests = TestLoader().loadTestsFromTestCase(ExampleTests)
+    example2_tests = TestLoader().loadTestsFromTestCase(Example2Test)
 
-suite = TestSuite([example_tests, example2_tests])
+    suite = TestSuite([example_tests, example2_tests])
 
-runner = HtmlTestRunner(output='example_suite')
+    runner = HtmlTestRunner(output='example_suite')
 
-runner.run(suite)
+    runner.run(suite)
 
 ```
 
@@ -118,7 +118,29 @@ This is an example of what you got in the console.
 
 ![Test Results](docs/test_results.gif)
 
-This is a sample of the template that came by default with the runner. If you want to customize it or use a new one just replace the template in the template folder, the runner use jinja to render the template, so take in account the vars that are being pass to the template.
+This is a sample of the results from the template that came by default with the runner. If you want to use your own template you can pass the abolute path to it when instanciating the `HtmlTestRunner` class, like `HtmlTestRunner(output='example_suite', template='path/to/template', report_title='My Report'`.
+Your template must use jinja2 syntax, since this is the engine we use.
+
+
+`report_title` is the title we want to appear at the top of the report. When using a custom template, these values are pass.
+
+
+- `title`: This is the report name
+- `headers`: This is a dict with 3 items:
+    - `start_time`: When the test was run.
+    - `duration`: How much it took to run
+    - `status`: a string with how much test pass, fail, throw an error or were skip.
+    Note: Remenber on jinja templetes dict can be access throw dot notation, e.g: `{{headers.status}}`
+- `testcase_name`: The name of the Testcase class.
+- `tests_results`: A list of lists, each inner list contains 4 elements, in the following order:
+    - Test description or test name: If test does not have docs string, test name is used.
+    - Status: Could be one of ('success', 'danger', 'warning', 'info')
+    - Error type
+    - Error message
+- `total_tests`: The amount of tests run
+
+
+You can access these values a vars, for rendering just surround it with `{{ var }}`, for `tests_results` you need to iterate it. Click [here](docs/example_template.html) for a template example, this is the default one shipped with the package.
 
 
 
@@ -126,9 +148,10 @@ This is a sample of the template that came by default with the runner. If you wa
 
 - [ ] Add Test
 - [ ] Improve documentation
-- [ ] Add custom templates
+- [x] Add custom templates
 - [ ] Add xml results
 - [ ] Add support for Python2.7
+- [ ] Add support for one report when running test suites.
 
 ## Contributing
 

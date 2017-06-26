@@ -13,7 +13,7 @@ class HTMLTestRunner(TextTestRunner):
 
     def __init__(self, output, verbosity=2, stream=sys.stderr,
                  descriptions=True, failfast=False, buffer=False,
-                 resultclass=None, report_title=None):
+                 report_title=None, template=None, resultclass=None):
         self.verbosity = verbosity
         self.output = output
         self.encoding = UTF8
@@ -29,6 +29,7 @@ class HTMLTestRunner(TextTestRunner):
             self.resultclass = resultclass
 
         self.report_title = report_title or "Test Result"
+        self.template = template
 
     def _make_result(self):
         """ Create a TestResult object which will be used to store
