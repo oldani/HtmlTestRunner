@@ -148,9 +148,10 @@ You can access these values a vars, for rendering just surround it with `{{ var 
 
 - [ ] Add Test
 - [ ] Improve documentation
-- [ ] Add custom templates
+- [x] Add custom templates
 - [ ] Add xml results
 - [ ] Add support for Python2.7
+- [ ] Add support for one report when running test suites.
 
 ## Contributing
 
