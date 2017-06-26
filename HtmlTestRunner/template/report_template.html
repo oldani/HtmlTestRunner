@@ -11,16 +11,9 @@
         <div class="row">
             <div class="col-xs-12">
                 <h2 class="text-capitalize">{{title}}</h2>
-                {% for name, value in header %}
-                    <p class='attribute'>
-                        <strong>{{name}}:</strong>
-                        {% if name == 'Status'%} 
-                            {{ value|join(', ') }}
-                        {% else %}
-                            {{value}}
-                        {% endif %}
-                    </p>
-                {% endfor %}
+                <p class='attribute'><strong>Start Time:</strong>{{headers.start_time}}</p>
+                <p class='attribute'><strong>Duration:</strong>{{headers.duration}}</p>
+                <p class='attribute'><strong>Status:</strong>{{headers.status}}</p>
             </div>
         </div>
         <div class="row">
@@ -28,21 +21,21 @@
                 <table class='table table-hover table-responsive'>
                     <thead>
                         <tr>
-                            <th>{{class_name}}</th>
+                            <th>{{testcase_name}}</th>
                             <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for eachTestCase, status, errorType, errorMessage in reportCases %}
+                        {% for eachTestCase, status, errorType, errorMessage in tests_results %}
                             <tr class='{{status}}'>
                                 <td class="col-xs-9">{{eachTestCase}}</td>
                                 <td class="col-xs-3">
                                     <span class="label label-{{status}}">
-                                        {% if "success" in status %}
+                                        {% if "success" == status %}
                                             Pass
-                                        {% elif "info" in status %}
+                                        {% elif "info" == status %}
                                             Skip
-                                        {% elif "danger" in status%}
+                                        {% elif "danger" == status%}
                                             Fail
                                         {% else %}
                                             Error
@@ -53,7 +46,7 @@
                                     {% endif %}
                                 </td>
                             </tr>
-                            {% if "success" not in status %}
+                            {% if "success" != status %}
                                 <tr style="display:none;">
                                     <td class="col-xs-9">
                                         <p>{{errorType}}</p>
@@ -66,10 +59,8 @@
                             <td>
                                Total Test Runned: {{total_test}}
                             </td>
-                            <td class="row">
-                                {% for value in header[2][1] %}
-                                    <span class="col-xs-3">{{value}}</span>
-                                {% endfor %}
+                            <td>
+                                <span>{{headers.status}}</span>
                             </td>
                         </tr>
                     </tbody>
