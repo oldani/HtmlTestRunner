@@ -2,18 +2,38 @@ import os
 import sys
 import time
 import traceback
-import jinja2
-
 from unittest import TestResult, _TextTestResult
 from unittest.result import failfast
 
-template_dir = os.path.join(os.path.dirname(__file__), 'template')
-jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir))
+from jinja2 import Template
 
 
-def render_html(template, **kw):
-    loaded_template = jinja_env.get_template(template)
-    return loaded_template.render(**kw)
+DEFAULT_TEMPLATE = os.path.join(os.path.dirname(__file__), "template",
+                                "report_template.html")
+
+
+def load_template(template):
+    """ Try to read a file from a given path, if file
+        does not exist, load default one. """
+    file = None
+    try:
+        with open(template, "r") as f:
+            file = f.read()
+    except (FileNotFoundError, TypeError) as err:
+        if template:
+            print("Error: Your Template wasn't loaded", err,
+                  "Loading Default Template", sep="\n")
+        with open(DEFAULT_TEMPLATE, "r") as f:
+            file = f.read()
+    finally:
+        return file
+
+
+def render_html(template, **kwargs):
+    template_file = load_template(template)
+    if template_file:
+        template = Template(template_file)
+        return template.render(**kwargs)
 
 
 def testcase_name(test_method):
@@ -212,10 +232,17 @@ class _HtmlTestResult(_TextTestResult):
     def get_report_attributes(self, tests, start_time, elapsed_time):
         """ Setup the header info for the report. """
 
-        failures = len(list(filter(lambda e: e.outcome == e.FAILURE, tests)))
-        errors = len(list(filter(lambda e: e.outcome == e.ERROR, tests)))
-        skips = len(list(filter(lambda e: e.outcome == e.SKIP, tests)))
-        success = len(list(filter(lambda e: e.outcome == e.SUCCESS, tests)))
+        failures = errors = skips = success = 0
+        for test in tests:
+            outcome = test.outcome
+            if outcome == test.ERROR:
+                errors += 1
+            elif outcome == test.FAILURE:
+                failures += 1
+            elif outcome == test.SKIP:
+                skips += 1
+            elif outcome == test.SUCCESS:
+                success += 1
         status = []
 
         if success:
@@ -226,12 +253,15 @@ class _HtmlTestResult(_TextTestResult):
             status.append('Error: {}'.format(errors))
         if skips:
             status.append('Skip: {}'.format(skips))
-        hearder = [
-                    ('Start Time', str(start_time)[:19]),
-                    ('Duration', str(elapsed_time)[:7]),
-                    ('Status', status)]
+        result = ', '.join(status)
+
+        hearders = {
+            "start_time": str(start_time)[:19],
+            "duration": str(elapsed_time)[:7],
+            "status": result
+        }
         total_runned_test = success + skips + errors + failures
-        return hearder, total_runned_test
+        return hearders, total_runned_test
 
     def _test_method_name(self, test_id):
         """ Return a test name of the test id. """
@@ -270,14 +300,14 @@ class _HtmlTestResult(_TextTestResult):
         """ Try to sort a list of test runned by numbers if have. """
         return sorted(test_list, key=self.get_test_number)
 
-    def _report_suite(self, suite_name, tests, testRunner):
+    def _report_tests(self, test_class_name, tests, testRunner):
         """ Generate a html file for a given suite.  """
         report_name = testRunner.report_title
         start_time = testRunner.start_time
         elapsed_time = testRunner.time_taken
 
-        report_header, total_test = self.get_report_attributes(tests, start_time, elapsed_time)
-        class_name = suite_name.split("_")[1]
+        report_headers, total_test = self.get_report_attributes(tests, start_time, elapsed_time)
+        testcase_name = test_class_name.split("_")[1]
         test_cases_list = []
 
         # Sort test by number if they have
@@ -286,24 +316,27 @@ class _HtmlTestResult(_TextTestResult):
         for test in tests:
             self._report_testcase(test, test_cases_list)
 
-        html_file = render_html('report_template.html', title=report_name,
-                                header=report_header, class_name=class_name,
-                                reportCases=test_cases_list,
-                                total_test=total_test)
+        html_file = render_html(testRunner.template, title=report_name,
+                                headers=report_headers,
+                                testcase_name=testcase_name,
+                                tests_results=test_cases_list,
+                                total_tests=total_test)
         return html_file
 
     def generate_reports(self, testRunner):
         """ Generate report for all given runned test object. """
         all_results = self._get_info_by_testcase()
 
-        for suite_name, all_tests in all_results.items():
+        for testcase_class_name, all_tests in all_results.items():
 
             if testRunner.outsuffix:
-                suite_name = "Test_{}_{}.html".format(suite_name,
-                                                      testRunner.outsuffix)
+                testcase_class_name = "Test_{}_{}.html".format(testcase_class_name,
+                                                               testRunner.outsuffix)
 
-            test_suite = self._report_suite(suite_name, all_tests, testRunner)
-            self.generate_file(testRunner.output, suite_name, test_suite)
+            tests = self._report_tests(testcase_class_name, all_tests,
+                                       testRunner)
+            self.generate_file(testRunner.output, testcase_class_name,
+                               tests)
 
     def generate_file(self, output, report_name, report):
         """ Generate the report file in the given path. """
