@@ -92,7 +92,11 @@ class HTMLTestRunner(TextTestRunner):
 
             self.stream.writeln()
             self.stream.writeln('Generating HTML reports... ')
-            result.generate_reports(self)
+            reports_path_list = result.generate_reports(self)
+
+            if reports_path_list:
+                self.stream.writeln('Reports generated: {}'.\
+                    format(', '.join(reports_path_list)))
         finally:
             pass
         return result

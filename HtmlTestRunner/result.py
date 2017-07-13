@@ -326,6 +326,7 @@ class _HtmlTestResult(_TextTestResult):
     def generate_reports(self, testRunner):
         """ Generate report for all given runned test object. """
         all_results = self._get_info_by_testcase()
+        reports_path_list = []
 
         for testcase_class_name, all_tests in all_results.items():
 
@@ -335,8 +336,10 @@ class _HtmlTestResult(_TextTestResult):
 
             tests = self._report_tests(testcase_class_name, all_tests,
                                        testRunner)
-            self.generate_file(testRunner.output, testcase_class_name,
-                               tests)
+            path_file = self.generate_file(testRunner.output, testcase_class_name, tests)
+            reports_path_list.append(path_file)
+
+        return reports_path_list
 
     def generate_file(self, output, report_name, report):
         """ Generate the report file in the given path. """
@@ -347,6 +350,8 @@ class _HtmlTestResult(_TextTestResult):
         path_file = os.path.join(dir_to, report_name)
         with open(path_file, 'w') as report_file:
             report_file.write(report)
+
+        return path_file
 
     def _exc_info_to_string(self, err, test):
         """ Converts a sys.exc_info()-style tuple of values into a string."""
