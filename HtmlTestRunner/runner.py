@@ -60,7 +60,7 @@ class HTMLTestRunner(TextTestRunner):
             self.stream.writeln(result.separator2)
             run = result.testsRun
             self.stream.writeln("Ran {} test{} in {}".format(run,
-                                run != 1 and "s" or "", str(self.time_taken)[:5]))
+                                run != 1 and "s" or "", str(self.time_taken)[:7]))
             self.stream.writeln()
 
             expectedFails = len(result.expectedFailures)
