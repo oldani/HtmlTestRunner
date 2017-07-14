@@ -358,8 +358,8 @@ class _HtmlTestResult(_TextTestResult):
         if not os.path.exists(dir_to):
             os.makedirs(dir_to)
         path_file = os.path.join(dir_to, report_name)
-        with open(path_file, 'w') as report_file:
-            report_file.write(report)
+        with open(path_file, 'wb') as report_file:
+            report_file.write(report.encode('utf-8'))
 
         return path_file
 
