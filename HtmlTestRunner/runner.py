@@ -1,5 +1,4 @@
 import sys
-import time
 from datetime import datetime
 
 from unittest import TextTestRunner
@@ -21,7 +20,6 @@ class HTMLTestRunner(TextTestRunner):
         TextTestRunner.__init__(self, stream, descriptions, verbosity,
                                 failfast=failfast, buffer=buffer)
 
-        self.outsuffix = time.strftime("%Y-%m-%d_%H-%M")
         self.elapsed_times = True
         if resultclass is None:
             self.resultclass = _HtmlTestResult
@@ -60,7 +58,7 @@ class HTMLTestRunner(TextTestRunner):
             self.stream.writeln(result.separator2)
             run = result.testsRun
             self.stream.writeln("Ran {} test{} in {}".format(run,
-                                run != 1 and "s" or "", str(self.time_taken)[:5]))
+                                run != 1 and "s" or "", str(self.time_taken)[:7]))
             self.stream.writeln()
 
             expectedFails = len(result.expectedFailures)
@@ -92,7 +90,11 @@ class HTMLTestRunner(TextTestRunner):
 
             self.stream.writeln()
             self.stream.writeln('Generating HTML reports... ')
-            result.generate_reports(self)
+            reports_path_list = result.generate_reports(self)
+
+            if reports_path_list:
+                self.stream.writeln('Reports generated: {}'.\
+                    format(', '.join(reports_path_list)))
         finally:
             pass
         return result
