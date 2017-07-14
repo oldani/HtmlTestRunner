@@ -16,18 +16,27 @@ def load_template(template):
     """ Try to read a file from a given path, if file
         does not exist, load default one. """
     file = None
+
+    if template is None:
+        print("Template is not specified, load default template instead.")
+        template = DEFAULT_TEMPLATE
+    elif not os.path.isfile(template):
+        print("Specified template path is not correct, load default template instead.")
+        template = DEFAULT_TEMPLATE
+
     try:
         with open(template, "r") as f:
             file = f.read()
-    except (FileNotFoundError, TypeError) as err:
+    except TypeError as err:
         if template:
-            err_msg = "\n".join(["Error: Your Template wasn't loaded",
+            err_msg = "\n".join(["Error: Your Template wasn't loaded successfully",
                                  err, "Loading Default Template"])
             print(err_msg)
+
         with open(DEFAULT_TEMPLATE, "r") as f:
             file = f.read()
-    finally:
-        return file
+
+    return file
 
 
 def render_html(template, **kwargs):
