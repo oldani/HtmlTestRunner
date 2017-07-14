@@ -224,7 +224,7 @@ class _HtmlTestResult(_TextTestResult):
             self.stream.writeln('%s' % test_info.get_error_info())
 
     def _get_info_by_testcase(self):
-        """ Organize test results  by TestCase module. """
+        """ Organize test results by TestCase module. """
 
         tests_by_testcase = {}
 
@@ -239,7 +239,7 @@ class _HtmlTestResult(_TextTestResult):
 
         return tests_by_testcase
 
-    def get_report_attributes(self, tests, start_time, elapsed_time):
+    def _get_report_attributes(self, tests, start_time, elapsed_time):
         """ Setup the header info for the report. """
 
         failures = errors = skips = success = 0
@@ -295,7 +295,7 @@ class _HtmlTestResult(_TextTestResult):
 
         return test_cases_list.append([desc, status, error_type, error_message])
 
-    def get_test_number(self, test):
+    def _get_test_number(self, test):
         """ Return the number of a test case or 0. """
         test_number = 0
         test_name = self._test_method_name(test.test_id)
@@ -306,32 +306,48 @@ class _HtmlTestResult(_TextTestResult):
 
         return test_number
 
-    def sort_test_list(self, test_list):
+    def _sort_test_list(self, test_list):
         """ Try to sort a list of test runned by numbers if have. """
-        return sorted(test_list, key=self.get_test_number)
+        return sorted(test_list, key=self._get_test_number)
 
-    def _report_tests(self, test_class_name, tests, testRunner):
-        """ Generate a html file for a given suite.  """
-        report_name = testRunner.report_title
+    def _render_html_report(self, testRunner, tests):
+        """ Render html report with test result. """
         start_time = testRunner.start_time
         elapsed_time = testRunner.time_taken
 
-        report_headers, total_test = self.get_report_attributes(tests, start_time, elapsed_time)
-        testcase_name = test_class_name.split("_")[1]
+        report_headers, total_test = self._get_report_attributes(tests, start_time, elapsed_time)
         test_cases_list = []
 
         # Sort test by number if they have
-        tests = self.sort_test_list(tests)
+        tests = self._sort_test_list(tests)
 
         for test in tests:
             self._report_testcase(test, test_cases_list)
 
-        html_file = render_html(testRunner.template, title=report_name,
-                                headers=report_headers,
-                                testcase_name=testcase_name,
-                                tests_results=test_cases_list,
-                                total_tests=total_test)
-        return html_file
+        html_report_content = render_html(
+            testRunner.template,
+            title=testRunner.report_title,
+            headers=report_headers,
+            testcase_name=testRunner.output,
+            tests_results=test_cases_list,
+            total_tests=total_test
+        )
+        return html_report_content
+
+    def _generate_html_file(self, testRunner, all_tests):
+        """ Generate file with html report content. """
+        report_save_dir = os.path.join(os.getcwd(), 'reports', testRunner.output)
+        if not os.path.exists(report_save_dir):
+            os.makedirs(report_save_dir)
+
+        report_file_name = "{}.html".format(time.strftime("%Y-%m-%d-%H-%M-%S"))
+        report_file_fullpath = os.path.join(report_save_dir, report_file_name)
+
+        report_content = self._render_html_report(testRunner, all_tests)
+        with open(report_file_fullpath, 'wb') as report_file:
+            report_file.write(report_content.encode('utf-8'))
+
+        return report_file_fullpath
 
     def generate_reports(self, testRunner):
         """ Generate report for all given runned test object. """
@@ -339,29 +355,10 @@ class _HtmlTestResult(_TextTestResult):
         reports_path_list = []
 
         for testcase_class_name, all_tests in all_results.items():
-
-            if testRunner.outsuffix:
-                testcase_class_name = "Test_{}_{}.html".format(testcase_class_name,
-                                                               testRunner.outsuffix)
-
-            tests = self._report_tests(testcase_class_name, all_tests,
-                                       testRunner)
-            path_file = self.generate_file(testRunner.output, testcase_class_name, tests)
+            path_file = self._generate_html_file(testRunner, all_tests)
             reports_path_list.append(path_file)
 
         return reports_path_list
-
-    def generate_file(self, output, report_name, report):
-        """ Generate the report file in the given path. """
-        current_dir = os.getcwd()
-        dir_to = os.path.join(current_dir, 'reports', output)
-        if not os.path.exists(dir_to):
-            os.makedirs(dir_to)
-        path_file = os.path.join(dir_to, report_name)
-        with open(path_file, 'wb') as report_file:
-            report_file.write(report.encode('utf-8'))
-
-        return path_file
 
     def _exc_info_to_string(self, err, test):
         """ Converts a sys.exc_info()-style tuple of values into a string."""

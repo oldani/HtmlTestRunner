@@ -1,5 +1,4 @@
 import sys
-import time
 from datetime import datetime
 
 from unittest import TextTestRunner
@@ -21,7 +20,6 @@ class HTMLTestRunner(TextTestRunner):
         TextTestRunner.__init__(self, stream, descriptions, verbosity,
                                 failfast=failfast, buffer=buffer)
 
-        self.outsuffix = time.strftime("%Y-%m-%d_%H-%M")
         self.elapsed_times = True
         if resultclass is None:
             self.resultclass = _HtmlTestResult
