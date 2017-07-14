@@ -21,8 +21,9 @@ def load_template(template):
             file = f.read()
     except (FileNotFoundError, TypeError) as err:
         if template:
-            print("Error: Your Template wasn't loaded", err,
-                  "Loading Default Template", sep="\n")
+            err_msg = "\n".join(["Error: Your Template wasn't loaded",
+                                 err, "Loading Default Template"])
+            print(err_msg)
         with open(DEFAULT_TEMPLATE, "r") as f:
             file = f.read()
     finally:
