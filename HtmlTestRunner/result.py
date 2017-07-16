@@ -276,7 +276,7 @@ class _HtmlTestResult(_TextTestResult):
         test_description = testCase.test_description
         desc = test_description or test_name
 
-        status = ('success', 'danger', 'warning', 'info')[testCase.outcome-1]
+        status = ('success', 'danger', 'warning', 'info')[testCase.outcome - 1]
 
         error_type = ""
         if testCase.outcome != testCase.SKIP and testCase.outcome != testCase.SUCCESS:
