@@ -18,15 +18,16 @@ def load_template(template):
         does not exist, load default one. """
     file = None
     try:
-        with open(template, "r") as f:
-            file = f.read()
-    except (FileNotFoundError, TypeError) as err:
         if template:
-            print("Error: Your Template wasn't loaded", err,
-                  "Loading Default Template", sep="\n")
-        with open(DEFAULT_TEMPLATE, "r") as f:
-            file = f.read()
+            with open(template, "r") as f:
+                file = f.read()
+    except Exception as err:
+        print("Error: Your Template wasn't loaded", err,
+              "Loading Default Template", sep="\n")
     finally:
+        if not file:
+            with open(DEFAULT_TEMPLATE, "r") as f:
+                file = f.read()
         return file
 
 
