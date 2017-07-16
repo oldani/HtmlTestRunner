@@ -74,7 +74,7 @@ test_requirements = [
 
 setup(
     name='html-testRunner',
-    version='1.1.0',
+    version='1.1.1',
     description="A Test Runner in python, for Human Readable HTML Reports",
     long_description=__doc__,
     author="Ordanis Sanchez Suero",

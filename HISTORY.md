@@ -22,3 +22,10 @@
 * Improment of documantation
 * Custom templates feature
 * Minor internal changes
+
+## 1.1.1 (2017-07-16)
+
+* Fix print func bug inseted on 1.1.0
+* Fix loading default template in py27 inserted on 1.1.0
+* Fix time elapsed output in console.
+* Fix template overwrite when runned in the same minute.
