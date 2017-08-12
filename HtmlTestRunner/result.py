@@ -292,11 +292,13 @@ class _HtmlTestResult(_TextTestResult):
         test_number = 0
         try:
             test_name = self._test_method_name(test.test_id)
-            test_number = int(test_name.split('_')[1])
+            if '_' in test_name:
+                test_number = int(test_name.split('_')[1])
 
         except ValueError:
             pass
         return test_number
+
 
     def sort_test_list(self, test_list):
         """ Try to sort a list of test runned by numbers if have. """
