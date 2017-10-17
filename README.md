@@ -91,7 +91,7 @@ For does who have `test suites` it works too, just create a runner instance and 
 ```python
 
     from unittest import TestLoader, TestSuite
-    from HtmlTestRunner import HtmlTestRunner
+    from HtmlTestRunner import HTMLTestRunner
     import ExampleTest
     import Example2Test
 
@@ -100,7 +100,7 @@ For does who have `test suites` it works too, just create a runner instance and 
 
     suite = TestSuite([example_tests, example2_tests])
 
-    runner = HtmlTestRunner(output='example_suite')
+    runner = HTMLTestRunner(output='example_suite')
 
     runner.run(suite)
 
