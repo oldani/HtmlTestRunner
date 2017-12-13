@@ -294,7 +294,7 @@ class _HtmlTestResult(_TextTestResult):
             test_name = self._test_method_name(test.test_id)
             test_number = int(test_name.split('_')[1])
 
-        except ValueError:
+        except ValueError, IndexError:
             pass
         return test_number
 
