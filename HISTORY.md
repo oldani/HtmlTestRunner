@@ -29,3 +29,8 @@
 * Fix loading default template in py27 inserted on 1.1.0
 * Fix time elapsed output in console.
 * Fix template overwrite when runned in the same minute.
+
+
+## 1.1.2 (2018-01-27)
+
+* Minor fix
