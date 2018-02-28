@@ -13,7 +13,8 @@ class HTMLTestRunner(TextTestRunner):
 
     def __init__(self, output, verbosity=2, stream=sys.stderr,
                  descriptions=True, failfast=False, buffer=False,
-                 report_title=None, template=None, resultclass=None):
+                 report_title=None, template=None, resultclass=None,
+                 combine_suite=False, outsuffix=None):
         self.verbosity = verbosity
         self.output = output
         self.encoding = UTF8
@@ -21,15 +22,17 @@ class HTMLTestRunner(TextTestRunner):
         TextTestRunner.__init__(self, stream, descriptions, verbosity,
                                 failfast=failfast, buffer=buffer)
 
-        self.outsuffix = time.strftime("%Y-%m-%d_%H-%M-%S")
+        self.outsuffix = outsuffix or time.strftime("%Y-%m-%d_%H-%M-%S")
         self.elapsed_times = True
         if resultclass is None:
             self.resultclass = _HtmlTestResult
         else:
             self.resultclass = resultclass
 
-        self.report_title = report_title or "Test Result"
+        self.report_title = (report_title or combine_suite and "Test Suite" or
+                             "Test Result")
         self.template = template
+        self.combine_suite = combine_suite
 
     def _make_result(self):
         """ Create a TestResult object which will be used to store
