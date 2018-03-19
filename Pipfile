@@ -1,0 +1,18 @@
+[[source]]
+
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+
+[packages]
+"Jinja2" = "==2.9.5"
+
+
+[dev-packages]
+
+bumpversion = "==0.5.3"
+"flake8" = "==2.6.0"
+tox = "==2.3.1"
+coverage = "==4.1"
+"dev_html" = {path = ".", editable = true}
