@@ -70,6 +70,7 @@ requirements = [
 
 test_requirements = [
     # Package test requirements here
+    "six==1.11.0"
 ]
 
 setup(
