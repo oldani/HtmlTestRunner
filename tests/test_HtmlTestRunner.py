@@ -107,6 +107,10 @@ class TestHtmlTestTunner(unittest.TestCase):
             # Check skip and message due.
             assert "This test should be skipped." in report
             assert "skipping this test" in report
+            # Others
+            assert "Total Test Runned: 4" in report
+            assert "DummyTestCase" in report
+            assert "Test Suite" in report
 
 
 if __name__ == "__main__":
