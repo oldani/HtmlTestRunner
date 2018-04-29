@@ -37,6 +37,8 @@ class HTMLTestRunner(TextTestRunner):
         else:
             self.resultclass = resultclass
 
+        if template_args is not None and not isinstance(template_args, dict):
+            raise ValueError("template_args must be a dict-like.")
         self.template_args = template_args or {}
 
         self.report_title = report_title or "Unittest Results"
