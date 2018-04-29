@@ -30,7 +30,7 @@
                     <tbody>
                         {% for test_case in tests_results %}
                         <tr class='{{ status_tags[test_case.outcome] }}'>
-                            <td class="col-xs-9">{{ test_case.test_description }}</td>
+                            <td class="col-xs-9">{{ test_case.test_id.split(".")[-1] }}</td>
                             <td class="col-xs-3">
                                 <span class="label label-{{ status_tags[test_case.outcome] }}">
                                     {% if test_case.outcome == test_case.SUCCESS %}
@@ -43,12 +43,12 @@
                                         Error
                                     {% endif %}
                                 </span>
-                                {% if test_case.stdout or test_case.err %}
+                                {% if (test_case.stdout or test_case.err) and test_case.outcome != test_case.SKIP %}
                                     &nbsp<button class="btn btn-default btn-xs">View</button>
                                 {% endif %}
                             </td>
                         </tr>
-                        {% if test_case.stdout or test_case.err or test_case.err %}
+                        {% if (test_case.stdout or test_case.err or test_case.err) and test_case.outcome != test_case.SKIP %}
                             <tr style="display:none;">
                                 <td class="col-xs-9">
                                     {% if test_case.stdout %}<p>{{ test_case.stdout }}</p>{% endif %}

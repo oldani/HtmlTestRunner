@@ -224,7 +224,7 @@ class HtmlTestResult(TextTestResult):
             for test_info in tests:
                 if isinstance(test_info, tuple):
                     test_info = test_info[0]
-                testcase_name = test_info.test_name
+                testcase_name = ".".join(test_info.test_id.split(".")[:-1])
                 if testcase_name not in tests_by_testcase:
                     tests_by_testcase[testcase_name] = []
                 tests_by_testcase[testcase_name].append(test_info)
@@ -266,7 +266,7 @@ class HtmlTestResult(TextTestResult):
         result_summary = ', '.join(status)
 
         if elapsed_time is not None:
-            result_summary += ". Duration: {}".format(self._format_duration(elapsed_time))
+            result_summary += " -- Duration: {}".format(self._format_duration(elapsed_time))
 
         return result_summary
 
