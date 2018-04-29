@@ -233,6 +233,7 @@ class HtmlTestResult(TextTestResult):
 
     @staticmethod
     def _format_duration(elapsed_time):
+        """Format the elapsed time in seconds, or milliseconds if the duration is less than 1 second."""
         if elapsed_time > 1:
             duration = '{:2.2f} s'.format(elapsed_time)
         else:
@@ -240,7 +241,7 @@ class HtmlTestResult(TextTestResult):
         return duration
 
     def get_results_summary(self, tests, elapsed_time=None):
-        # """ Setup the header info for the report. """
+        """Create a summary of the outcomes of all given tests."""
 
         failures = errors = skips = success = 0
         for test in tests:
@@ -281,13 +282,8 @@ class HtmlTestResult(TextTestResult):
         }
         return header_info
 
-    @staticmethod
-    def _test_method_name(test_id):
-        """ Return a test name of the test id. """
-        return test_id.split('.')[-1]
-
-    def _report_tests(self, all_results, testRunner):
-        # """ Generate a html file for a given suite.  """
+    def _get_report_summaries(self, all_results, testRunner):
+        """ Generate headers and summaries for all given test cases."""
         start_time = testRunner.start_time
         elapsed_time = testRunner.time_taken.total_seconds()
 
@@ -306,11 +302,11 @@ class HtmlTestResult(TextTestResult):
         return header_info, summaries
 
     def generate_reports(self, testRunner):
-        """ Generate report for all given runned test object. """
+        """ Generate report(s) for all given test cases that have been run. """
         status_tags = ('success', 'danger', 'warning', 'info')
         all_results = self._get_info_by_testcase()
 
-        header_info, summaries = self._report_tests(all_results, testRunner)
+        header_info, summaries = self._get_report_summaries(all_results, testRunner)
 
         if not testRunner.combine_reports:
             for test_case_class_name, test_case_tests in all_results.items():
