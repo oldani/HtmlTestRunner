@@ -139,13 +139,18 @@ Your template must use `jinja2` syntax, since this is the engine we use.
 When using any template, the following variables will be available by default for use by `jinja2`:
 
 - `title`: This is the report title - by default this is "Unittests Results" but can be changed using the `report_title` kwarg
-- `headers`: This is a dict with 3 items:
+- `headers`: This is a dict with 2 items:
     - `start_time`: A `datetime` object representing when the test was run
-    - `duration`: A string showing how long all tests took to run in either seconds or milliseconds
-    - `status`: A string containing a brief summary of all tests
+    - `status`: A dict of of the same form as the sub-dicts described below for `summaries` but for all tests combined
 - `all_results`: A dict - keys are the names of each test case and values are lists containing test result objects (see the source code or the template for what information these provide)
-- `summaries`: A dict - keys are the names of each test case and values are strings containing a brief summary of a given test case
-
+- `summaries`: A dict - keys are the names of each test case and values are dicts containing:
+    - `total`: The total number of tests
+    - `success`: The number of passed tests
+    - `failure`: The number of failed tests
+    - `error`: The number of errored tests
+    - `skip`: The number of skipped tests
+    - `duration`: A string showing how long all these tests took to run in either seconds or milliseconds
+    
 Furthermore, you can provide any number of further variables to access from the template using the `template_args` kwarg.
 For example, if you wanted to have the name of the logged in user available to insert into reports that could be achieved as follows:
 ```python
@@ -158,7 +163,7 @@ template_args = {
 h = HtmlTestRunner.HTMLTestRunner(template='path/to/template', template_args=template_args)
 ```
 
-Now the user name can be accessed from a template using `{{ user }}`.
+Now the user name can be accessed from a template using `jinja2` syntax: `{{ user }}`.
 
 
 Click [here](docs/example_template.html) for a template example, this is the default one shipped with the package.
@@ -172,7 +177,7 @@ Click [here](docs/example_template.html) for a template example, this is the def
 - [x] Add custom templates
 - [ ] Add xml results
 - [ ] Add support for Python2.7
-- [ ] Add support for one report when running test suites.
+- [x] Add support for one report when running test suites.
 
 ## Contributing
 
