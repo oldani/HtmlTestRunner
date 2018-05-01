@@ -12,8 +12,6 @@ class HTMLTestRunner(TextTestRunner):
     """" A test runner class that output the results. """
 
     time_format = "%Y-%m-%d_%H-%M-%S"
-    start_time = None
-    time_taken = None
 
     def __init__(self, output=".", verbosity=2, stream=sys.stderr,
                  descriptions=True, failfast=False, buffer=False,
@@ -46,6 +44,9 @@ class HTMLTestRunner(TextTestRunner):
 
         self.open_in_browser = open_in_browser
         self.combine_reports = combine_reports
+
+        self.start_time = 0
+        self.time_taken = 0
 
     def _make_result(self):
         """ Create a TestResult object which will be used to store
@@ -96,9 +97,9 @@ class HTMLTestRunner(TextTestRunner):
             if skipped:
                 infos.append("Skipped={}".format(skipped))
             if expectedFails:
-                infos.append("expected failures={}".format(expectedFails))
+                infos.append("Expected Failures={}".format(expectedFails))
             if unexpectedSuccesses:
-                infos.append("unexpected successes={}".format(unexpectedSuccesses))
+                infos.append("Unexpected Successes={}".format(unexpectedSuccesses))
 
             if infos:
                 self.stream.writeln(" ({})".format(", ".join(infos)))

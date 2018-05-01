@@ -12,8 +12,8 @@
             <div class="col-xs-12">
                 <h2 class="text-capitalize">{{ title }}</h2>
                 <p class='attribute'><strong>Start Time: </strong>{{ header_info.start_time.strftime("%Y-%m-%d %H:%M:%S") }}</p>
-                <p class='attribute'><strong>Duration: </strong>{{ header_info.duration }}</p>
-                <p class='attribute'><strong>Summary: </strong>{{ header_info.status }}</p>
+                <p class='attribute'><strong>Duration: </strong>{{ header_info.status.duration }}</p>
+                <p class='attribute'><strong>Summary: </strong>Total: {{ header_info.status.total }}, Pass: {{ header_info.status.success }}{% if header_info.status.failure %}, Fail: {{ header_info.status.failure }}{% endif %}{% if header_info.status.error %}, Error: {{ header_info.status.error }}{% endif %}{% if header_info.status.skip %}, Skip: {{ header_info.status.skip }}{% endif %}</p>
             </div>
         </div>
         {% for test_case_name, tests_results in all_results.items() %}
@@ -60,7 +60,7 @@
                         {% endfor %}
                         <tr>
                             <td>
-                               {{ summaries[test_case_name] }}
+                                Total: {{ summaries[test_case_name].total }}, Pass: {{ summaries[test_case_name].success }}{% if summaries[test_case_name].failure %}, Fail: {{ summaries[test_case_name].failure }}{% endif %}{% if summaries[test_case_name].error %}, Error: {{ summaries[test_case_name].error }}{% endif %}{% if summaries[test_case_name].skip %}, Skip: {{ summaries[test_case_name].skip }}{% endif %} -- Duration: {{ summaries[test_case_name].duration }}
                             </td>
                         </tr>
                     </tbody>

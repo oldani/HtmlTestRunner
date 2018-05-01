@@ -237,13 +237,13 @@ class HtmlTestResult(TextTestResult):
         if elapsed_time > 1:
             duration = '{:2.2f} s'.format(elapsed_time)
         else:
-            duration = '{:2.2f} ms'.format(elapsed_time * 1000)
+            duration = '{:d} ms'.format(int(elapsed_time * 1000))
         return duration
 
-    def get_results_summary(self, tests, elapsed_time=None):
+    def get_results_summary(self, tests, elapsed_time):
         """Create a summary of the outcomes of all given tests."""
 
-        failures = errors = skips = success = 0
+        failures = errors = skips = successes = 0
         for test in tests:
             outcome = test.outcome
             if outcome == test.ERROR:
@@ -253,32 +253,25 @@ class HtmlTestResult(TextTestResult):
             elif outcome == test.SKIP:
                 skips += 1
             elif outcome == test.SUCCESS:
-                success += 1
+                successes += 1
 
-        status = ['Total: {}'.format(len(tests))]
-        if success:
-            status.append('Pass: {}'.format(success))
-        if failures:
-            status.append('Fail: {}'.format(failures))
-        if errors:
-            status.append('Error: {}'.format(errors))
-        if skips:
-            status.append('Skip: {}'.format(skips))
-        result_summary = ', '.join(status)
+        results_summary = {
+            "total": len(tests),
+            "error": errors,
+            "failure": failures,
+            "skip": skips,
+            "success": successes,
+            "duration": self._format_duration(elapsed_time)
+        }
 
-        if elapsed_time is not None:
-            result_summary += " -- Duration: {}".format(self._format_duration(elapsed_time))
-
-        return result_summary
+        return results_summary
 
     def _get_header_info(self, tests, start_time, elapsed_time):
-        result_summary = self.get_results_summary(tests)
-        duration = self._format_duration(elapsed_time)
+        results_summary = self.get_results_summary(tests, elapsed_time)
 
         header_info = {
             "start_time": start_time,
-            "duration": duration,
-            "status": result_summary
+            "status": results_summary
         }
         return header_info
 
