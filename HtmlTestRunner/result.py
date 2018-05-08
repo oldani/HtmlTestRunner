@@ -8,7 +8,6 @@ from unittest.result import failfast
 
 from jinja2 import Template
 
-
 DEFAULT_TEMPLATE = os.path.join(os.path.dirname(__file__), "template",
                                 "report_template.html")
 
@@ -45,6 +44,25 @@ def testcase_name(test_method):
     if module == "__main__.":
         module = ""
     result = module + testcase.__name__
+    return result
+
+
+def strip_module_names(testcase_names):
+    """Examine all given test case names and strip them the minimal
+    names needed to distinguish each. This prevents cases where test
+    cases housed in different files but with the same names cause clashes."""
+    result = testcase_names.copy()
+    for i, testcase in enumerate(testcase_names):
+        classname = testcase.split(".")[-1]
+        duplicate_found = False
+        testcase_names_ = testcase_names.copy()
+        del testcase_names_[i]
+        for testcase_ in testcase_names_:
+            classname_ = testcase_.split(".")[-1]
+            if classname_ == classname:
+                duplicate_found = True
+        if not duplicate_found:
+            result[i] = classname
     return result
 
 
@@ -92,6 +110,7 @@ class HtmlTestResult(TextTestResult):
 
     start_time = None
     stop_time = None
+    default_prefix = "TestResults_"
 
     def __init__(self, stream, descriptions, verbosity):
         TextTestResult.__init__(self, stream, descriptions, verbosity)
@@ -118,6 +137,7 @@ class HtmlTestResult(TextTestResult):
                     "{} ({:3f})s".format(verbose_str, test_info.elapsed_time))
             elif self.dots:
                 self.stream.write(short_str)
+
         self.callback = callback
 
     def getDescription(self, test):
@@ -167,7 +187,7 @@ class HtmlTestResult(TextTestResult):
         testinfo = self.infoclass(
             self, test, self.infoclass.FAILURE, err)
         self.failures.append((testinfo,
-                             self._exc_info_to_string(err, test)))
+                              self._exc_info_to_string(err, test)))
         self._prepare_callback(testinfo, [], "FAIL", "F")
 
     @failfast
@@ -310,7 +330,12 @@ class HtmlTestResult(TextTestResult):
                                         summaries=summaries,
                                         **testRunner.template_args)
 
-                self.generate_file(testRunner, test_case_class_name, html_file)
+                # append test case name if multiple reports to be generated
+                if testRunner.report_name is None:
+                    report_name_body = self.default_prefix + test_case_class_name
+                else:
+                    report_name_body = "{}_{}".format(testRunner.report_name, test_case_class_name)
+                self.generate_file(testRunner, report_name_body, html_file)
 
         else:
             html_file = render_html(testRunner.template, title=testRunner.report_title,
@@ -320,18 +345,22 @@ class HtmlTestResult(TextTestResult):
                                     summaries=summaries,
                                     **testRunner.template_args)
 
-            # TODO: allow user to provide a filename body?
-            self.generate_file(testRunner, "_".join(all_results.keys()), html_file)
+            # if possible use user report name if only one report
+            if testRunner.report_name is None:
+                report_name_body = self.default_prefix + "_".join(strip_module_names(list(all_results.keys())))
+            else:
+                report_name_body = testRunner.report_name
+            self.generate_file(testRunner, report_name_body, html_file)
 
     def generate_file(self, testRunner, report_name, report):
         """ Generate the report file in the given path. """
-        dir_to = os.path.join(testRunner.output, 'reports')
+        dir_to = testRunner.output
         if not os.path.exists(dir_to):
             os.makedirs(dir_to)
 
         if testRunner.timestamp:
             report_name += "_" + testRunner.timestamp
-        report_name = "{}_{}.html".format("TestResults", report_name)
+        report_name += ".html"
 
         path_file = os.path.abspath(os.path.join(dir_to, report_name))
         self.stream.writeln(os.path.relpath(path_file))

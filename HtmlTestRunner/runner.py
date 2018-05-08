@@ -13,9 +13,9 @@ class HTMLTestRunner(TextTestRunner):
 
     time_format = "%Y-%m-%d_%H-%M-%S"
 
-    def __init__(self, output=".", verbosity=2, stream=sys.stderr,
+    def __init__(self, output="./reports/", verbosity=2, stream=sys.stderr,
                  descriptions=True, failfast=False, buffer=False,
-                 report_title=None, template=None, resultclass=None,
+                 report_title=None, report_name=None, template=None, resultclass=None,
                  add_timestamp=True, open_in_browser=False,
                  combine_reports=False, template_args=None):
         self.verbosity = verbosity
@@ -40,6 +40,7 @@ class HTMLTestRunner(TextTestRunner):
         self.template_args = template_args or {}
 
         self.report_title = report_title or "Unittest Results"
+        self.report_name = report_name
         self.template = template
 
         self.open_in_browser = open_in_browser
