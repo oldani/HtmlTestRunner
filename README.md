@@ -86,7 +86,6 @@ Tests will be saved under a reports/ directory.
 `HtmlTestRunner` can also be used with `test suites`; just create a runner instance and call the run method with your suite. Here an example:
 
 ```python
-
 from unittest import TestLoader, TestSuite
 from HtmlTestRunner import HTMLTestRunner
 import ExampleTest
@@ -109,9 +108,18 @@ By default, separate reports will be produced for each `TestCase`.
 The `combine_reports` boolean kwarg can be used to tell `HTMLTestRunner` to instead produce a single report:
  ```python
 import HtmlTestRunner
-h = HtmlTestRunner.HTMLTestRunner(combine_reports=True)
+h = HtmlTestRunner.HTMLTestRunner(combine_reports=True).run(suite)
  ```
 
+### Setting a filename
+By default the name of the HTML file(s) produced will be created by joining the names of each test case together.
+The `report_name` kwarg can be used to specify a custom filename.
+For example, the following will produce a report file called "MyReport.html":
+
+```python
+import HtmlTestRunner
+h = HtmlTestRunner.HTMLTestRunner(combine_reports=True, report_name="MyReport", add_timestamp=False).run(suite)
+```
 
 ## Console output:
 
