@@ -80,10 +80,11 @@ if __name__ == '__main__':
 ```
 
 Just import `HtmlTestRunner` from package, then pass it to `unittest.main` with the `testRunner` keyword.
-Tests will be saved under a reports/ directory.
+Tests will be saved under a reports/ directory by default (the `output` kwarg controls this.).
 
 ### With Test Suites
-`HtmlTestRunner` can also be used with `test suites`; just create a runner instance and call the run method with your suite. Here an example:
+`HtmlTestRunner` can also be used with `test suites`; just create a runner instance and call the run method with your suite.
+Here an example:
 
 ```python
 from unittest import TestLoader, TestSuite
@@ -99,7 +100,6 @@ suite = TestSuite([example_tests, example2_tests])
 runner = HTMLTestRunner(output='example_suite')
 
 runner.run(suite)
-
 ```
 
 ### Combining Reports into a Single Report
