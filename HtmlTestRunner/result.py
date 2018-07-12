@@ -236,7 +236,7 @@ class HtmlTestResult(TextTestResult):
             self.stream.writeln('%s' % test_info.get_error_info())
 
     def _get_info_by_testcase(self):
-        """ Organize test results  by TestCase module. """
+        """ Organize test results by TestCase module. """
 
         tests_by_testcase = {}
 
@@ -248,6 +248,10 @@ class HtmlTestResult(TextTestResult):
                 if testcase_name not in tests_by_testcase:
                     tests_by_testcase[testcase_name] = []
                 tests_by_testcase[testcase_name].append(test_info)
+
+        # unittest tests in alphabetical order based on test name so re-assert this
+        for tests in tests_by_testcase.values():
+            tests.sort(key=lambda x: x.test_id)
 
         return tests_by_testcase
 
