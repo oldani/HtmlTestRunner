@@ -44,18 +44,22 @@ if __name__ == '__main__':
     more_tests_ = unittest.TestLoader().loadTestsFromTestCase(MoreTests_)
     suite = unittest.TestSuite([tests, other_tests, more_tests, more_tests_])
 
-    HTMLTestRunner(report_title='TEST COMBINED',
-                   report_name="MyReports",
-                   add_timestamp=False,
-                   open_in_browser=True,
-                   combine_reports=True).run(suite)
+    HTMLTestRunner(
+        report_title='TEST COMBINED',
+        report_name="MyReports",
+        add_timestamp=False,
+        open_in_browser=True,
+        combine_reports=True
+    ).run(suite)
 
     tests = unittest.TestLoader().loadTestsFromTestCase(My_Tests)
     other_tests = unittest.TestLoader().loadTestsFromTestCase(TestStringMethods)
     more_tests = unittest.TestLoader().loadTestsFromTestCase(MoreTests)
     more_tests_ = unittest.TestLoader().loadTestsFromTestCase(MoreTests_)
     suite = unittest.TestSuite([tests, other_tests, more_tests, more_tests_])
-    HTMLTestRunner(report_title='TEST SEPARATE',
-                   report_name="MyReports",
-                   open_in_browser=True,
-                   combine_reports=False).run(suite)
+    HTMLTestRunner(
+        report_title='TEST SEPARATE',
+        report_name="MyReports",
+        open_in_browser=True,
+        combine_reports=False
+    ).run(suite)

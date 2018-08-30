@@ -8,8 +8,8 @@ from unittest.result import failfast
 
 from jinja2 import Template
 
-DEFAULT_TEMPLATE = os.path.join(os.path.dirname(__file__), "template",
-                                "report_template.html")
+
+DEFAULT_TEMPLATE = os.path.join(os.path.dirname(__file__), "template", "report_template.html")
 
 
 def load_template(template):
@@ -80,6 +80,8 @@ class _TestInfo(object):
         self.stdout = test_result._stdout_data
         self.stderr = test_result._stderr_data
 
+        self.is_subtest = subTest is not None
+
         self.test_description = self.test_result.getDescription(test_method)
         self.test_exception_info = (
             '' if outcome in (self.SUCCESS, self.SKIP)
@@ -87,22 +89,40 @@ class _TestInfo(object):
                 self.err, test_method))
 
         self.test_name = testcase_name(test_method)
-        self.test_id = test_method.id()
-        if subTest:
+        if not self.is_subtest:
+            self.test_id = test_method.id()
+        else:
             self.test_id = subTest.id()
 
     def id(self):
         return self.test_id
 
     def test_finished(self):
-        self.elapsed_time = \
-            self.test_result.stop_time - self.test_result.start_time
+        self.elapsed_time = self.test_result.stop_time - self.test_result.start_time
 
     def get_description(self):
         return self.test_description
 
     def get_error_info(self):
         return self.test_exception_info
+
+
+class _SubTestInfos(object):
+    # TODO: make better: inherit _TestInfo?
+    (SUCCESS, FAILURE, ERROR, SKIP) = range(4)
+
+    def __init__(self, test_id, subtests):
+        self.subtests = subtests
+        self.test_id = test_id
+        self.outcome = self.check_outcome()
+
+    def check_outcome(self):
+        outcome = _TestInfo.SUCCESS
+        for subtest in self.subtests:
+            if subtest.outcome != _TestInfo.SUCCESS:
+                outcome = _TestInfo.FAILURE
+                break
+        return outcome
 
 
 class HtmlTestResult(TextTestResult):
@@ -118,6 +138,7 @@ class HtmlTestResult(TextTestResult):
         self._stdout_data = None
         self._stderr_data = None
         self.successes = []
+        self.subtests = {}
         self.callback = None
         self.infoclass = _TestInfo
         self.report_files = []
@@ -142,11 +163,7 @@ class HtmlTestResult(TextTestResult):
 
     def getDescription(self, test):
         """ Return the test description if not have test name. """
-        doc_first_line = test.shortDescription()
-        if self.descriptions and doc_first_line:
-            return doc_first_line
-        else:
-            return str(test)
+        return str(test)
 
     def startTest(self, test):
         """ Called before execute each method. """
@@ -177,60 +194,54 @@ class HtmlTestResult(TextTestResult):
     def addSuccess(self, test):
         """ Called when a test executes successfully. """
         self._save_output_data()
-        self._prepare_callback(
-            self.infoclass(self, test), self.successes, "OK", ".")
+        self._prepare_callback(self.infoclass(self, test), self.successes, "OK", ".")
 
     @failfast
     def addFailure(self, test, err):
         """ Called when a test method fails. """
         self._save_output_data()
-        testinfo = self.infoclass(
-            self, test, self.infoclass.FAILURE, err)
-        self.failures.append((testinfo,
-                              self._exc_info_to_string(err, test)))
-        self._prepare_callback(testinfo, [], "FAIL", "F")
+        testinfo = self.infoclass(self, test, self.infoclass.FAILURE, err)
+        self._prepare_callback(testinfo, self.failures, "FAIL", "F")
 
     @failfast
     def addError(self, test, err):
         """" Called when a test method raises an error. """
         self._save_output_data()
-        testinfo = self.infoclass(
-            self, test, self.infoclass.ERROR, err)
-        self.errors.append((
-            testinfo,
-            self._exc_info_to_string(err, test)
-        ))
-        self._prepare_callback(testinfo, [], 'ERROR', 'E')
+        testinfo = self.infoclass(self, test, self.infoclass.ERROR, err)
+        self._prepare_callback(testinfo, self.errors, 'ERROR', 'E')
 
     def addSubTest(self, testcase, test, err):
-        """ Called when a subTest method raise an error. """
-        if err is not None:
-            self._save_output_data()
-            testinfo = self.infoclass(
-                self, testcase, self.infoclass.ERROR, err, subTest=test)
-            self.errors.append((
-                testinfo,
-                self._exc_info_to_string(err, testcase)
-            ))
-            self._prepare_callback(testinfo, [], "ERROR", "E")
+        """ Called when a subTest completes. """
+        self._save_output_data()
+        # TODO: should ERROR cases be considered here too?
+        if err is None:
+            testinfo = self.infoclass(self, testcase, self.infoclass.SUCCESS, err, subTest=test)
+            self._prepare_callback(testinfo, self.successes, "OK", ".")
+        else:
+            testinfo = self.infoclass(self, testcase, self.infoclass.FAILURE, err, subTest=test)
+            self._prepare_callback(testinfo, self.failures, "FAIL", "F")
+
+        test_id_components = str(testcase).rstrip(')').split(' (')
+        test_id = test_id_components[1] + '.' + test_id_components[0]
+        if test_id not in self.subtests:
+            self.subtests[test_id] = []
+        self.subtests[test_id].append(testinfo)
 
     def addSkip(self, test, reason):
         """" Called when a test method was skipped. """
         self._save_output_data()
-        testinfo = self.infoclass(
-            self, test, self.infoclass.SKIP, reason)
-        self.skipped.append((testinfo, reason))
-        self._prepare_callback(testinfo, [], "SKIP", "S")
+        testinfo = self.infoclass(self, test, self.infoclass.SKIP, reason)
+        self._prepare_callback(testinfo, self.skipped, "SKIP", "S")
 
     def printErrorList(self, flavour, errors):
         """
         Writes information about the FAIL or ERROR to the stream.
         """
-        for test_info, dummy in errors:
+        for test_info in errors:
             self.stream.writeln(self.separator1)
             self.stream.writeln(
                 '{} [{:3f}s]: {}'.format(flavour, test_info.elapsed_time,
-                                         test_info.get_description())
+                                         test_info.test_id)
             )
             self.stream.writeln(self.separator2)
             self.stream.writeln('%s' % test_info.get_error_info())
@@ -240,9 +251,18 @@ class HtmlTestResult(TextTestResult):
 
         tests_by_testcase = {}
 
+        for test_name, subtests in self.subtests.items():
+            subtest_info = _SubTestInfos(test_name, subtests)
+            testcase_name = ".".join(test_name.split(".")[:-1])
+            if testcase_name not in tests_by_testcase:
+                tests_by_testcase[testcase_name] = []
+            tests_by_testcase[testcase_name].append(subtest_info)
+
         for tests in (self.successes, self.failures, self.errors, self.skipped):
             for test_info in tests:
-                if isinstance(test_info, tuple):
+                if test_info.is_subtest:
+                    continue
+                if isinstance(test_info, tuple):  # TODO: does this ever occur?
                     test_info = test_info[0]
                 testcase_name = ".".join(test_info.test_id.split(".")[:-1])
                 if testcase_name not in tests_by_testcase:
@@ -250,8 +270,8 @@ class HtmlTestResult(TextTestResult):
                 tests_by_testcase[testcase_name].append(test_info)
 
         # unittest tests in alphabetical order based on test name so re-assert this
-        for tests in tests_by_testcase.values():
-            tests.sort(key=lambda x: x.test_id)
+        for testcase in tests_by_testcase.values():
+            testcase.sort(key=lambda x: x.test_id)
 
         return tests_by_testcase
 
@@ -264,7 +284,7 @@ class HtmlTestResult(TextTestResult):
             duration = '{:d} ms'.format(int(elapsed_time * 1000))
         return duration
 
-    def get_results_summary(self, tests, elapsed_time):
+    def get_results_summary(self, tests):
         """Create a summary of the outcomes of all given tests."""
 
         failures = errors = skips = successes = 0
@@ -279,6 +299,14 @@ class HtmlTestResult(TextTestResult):
             elif outcome == test.SUCCESS:
                 successes += 1
 
+        elapsed_time = 0
+        for testinfo in tests:
+            if not isinstance(testinfo, _SubTestInfos):
+                elapsed_time += testinfo.elapsed_time
+            else:
+                for subtest in testinfo.subtests:
+                    elapsed_time += subtest.elapsed_time
+
         results_summary = {
             "total": len(tests),
             "error": errors,
@@ -290,8 +318,8 @@ class HtmlTestResult(TextTestResult):
 
         return results_summary
 
-    def _get_header_info(self, tests, start_time, elapsed_time):
-        results_summary = self.get_results_summary(tests, elapsed_time)
+    def _get_header_info(self, tests, start_time):
+        results_summary = self.get_results_summary(tests)
 
         header_info = {
             "start_time": start_time,
@@ -302,38 +330,32 @@ class HtmlTestResult(TextTestResult):
     def _get_report_summaries(self, all_results, testRunner):
         """ Generate headers and summaries for all given test cases."""
         start_time = testRunner.start_time
-        elapsed_time = testRunner.time_taken.total_seconds()
-
-        header_info = self._get_header_info(
-            [item for sublist in all_results.values() for item in sublist],
-            start_time, elapsed_time)
+        # elapsed_time = testRunner.time_taken.total_seconds()
 
         summaries = {}
-        # call get_report_attributes once for all tests and once for each set
         for test_case_class_name, test_case_tests in all_results.items():
-            elapsed_time = 0
-            for test in test_case_tests:
-                elapsed_time += test.elapsed_time
-            summaries[test_case_class_name] = self.get_results_summary(test_case_tests, elapsed_time)
+            summaries[test_case_class_name] = self.get_results_summary(test_case_tests)
 
-        return header_info, summaries
+        return summaries
 
     def generate_reports(self, testRunner):
         """ Generate report(s) for all given test cases that have been run. """
         status_tags = ('success', 'danger', 'warning', 'info')
         all_results = self._get_info_by_testcase()
-
-        header_info, summaries = self._get_report_summaries(all_results, testRunner)
+        summaries = self._get_report_summaries(all_results, testRunner)
 
         if not testRunner.combine_reports:
             for test_case_class_name, test_case_tests in all_results.items():
-                html_file = render_html(testRunner.template, title=testRunner.report_title,
-                                        header_info=header_info,
-                                        all_results={test_case_class_name: test_case_tests},
-                                        status_tags=status_tags,
-                                        summaries=summaries,
-                                        **testRunner.template_args)
-
+                header_info = self._get_header_info(test_case_tests, testRunner.start_time)
+                html_file = render_html(
+                    testRunner.template,
+                    title=testRunner.report_title,
+                    header_info=header_info,
+                    all_results={test_case_class_name: test_case_tests},
+                    status_tags=status_tags,
+                    summaries=summaries,
+                    **testRunner.template_args
+                )
                 # append test case name if multiple reports to be generated
                 if testRunner.report_name is None:
                     report_name_body = self.default_prefix + test_case_class_name
@@ -342,18 +364,24 @@ class HtmlTestResult(TextTestResult):
                 self.generate_file(testRunner, report_name_body, html_file)
 
         else:
-            html_file = render_html(testRunner.template, title=testRunner.report_title,
-                                    header_info=header_info,
-                                    all_results=all_results,
-                                    status_tags=status_tags,
-                                    summaries=summaries,
-                                    **testRunner.template_args)
-
-            # if possible use user report name if only one report
-            if testRunner.report_name is None:
-                report_name_body = self.default_prefix + "_".join(strip_module_names(list(all_results.keys())))
-            else:
+            header_info = self._get_header_info(
+                [item for sublist in all_results.values() for item in sublist],
+                testRunner.start_time
+            )
+            html_file = render_html(
+                testRunner.template,
+                title=testRunner.report_title,
+                header_info=header_info,
+                all_results=all_results,
+                status_tags=status_tags,
+                summaries=summaries,
+                **testRunner.template_args
+            )
+            # if available, use user report name
+            if testRunner.report_name is not None:
                 report_name_body = testRunner.report_name
+            else:
+                report_name_body = self.default_prefix + "_".join(strip_module_names(list(all_results.keys())))
             self.generate_file(testRunner, report_name_body, html_file)
 
     def generate_file(self, testRunner, report_name, report):

@@ -32,11 +32,21 @@ class TestStringMethods(unittest.TestCase):
         """ This test should be skipped. """
         pass
 
+    def test_subs(self):
+        test_string = "test1"
+        for i, char in enumerate(test_string):
+            with self.subTest(i=i):
+                self.assertEqual(char, "1")
+
+        with self.subTest(test_string=test_string):
+            # subtests that error will appear as a failure presently
+            raise AttributeError
+
 
 class MoreTests(unittest.TestCase):
     def test_1(self):
         print("This is different to test2.MoreTests.test_1")
-        self.assertAlmostEqual(1, 1.1, delta=0.05)
+        self.assertEqual(100, -100)
 
 
 if __name__ == '__main__':

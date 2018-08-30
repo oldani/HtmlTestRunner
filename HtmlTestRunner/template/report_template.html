@@ -16,8 +16,8 @@
                 <p class='attribute'><strong>Summary: </strong>Total: {{ header_info.status.total }}, Pass: {{ header_info.status.success }}{% if header_info.status.failure %}, Fail: {{ header_info.status.failure }}{% endif %}{% if header_info.status.error %}, Error: {{ header_info.status.error }}{% endif %}{% if header_info.status.skip %}, Skip: {{ header_info.status.skip }}{% endif %}</p>
             </div>
         </div>
-        {% for test_case_name, tests_results in all_results.items() %}
-        {% if tests_results %}
+        {%- for test_case_name, tests_results in all_results.items() %}
+        {%- if tests_results %}
         <div class="row">
             <div class="col-xs-12 col-sm-10 col-md-10">
                 <table class='table table-hover table-responsive'>
@@ -25,41 +25,111 @@
                         <tr>
                             <th>{{ test_case_name }}</th>
                             <th>Status</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for test_case in tests_results %}
+                        {%- for test_case in tests_results %}
+                        {%- if not test_case.subtests is defined %}
                         <tr class='{{ status_tags[test_case.outcome] }}'>
-                            <td class="col-xs-9">{{ test_case.test_id.split(".")[-1] }}</td>
-                            <td class="col-xs-3">
-                                <span class="label label-{{ status_tags[test_case.outcome] }}">
-                                    {% if test_case.outcome == test_case.SUCCESS %}
+                            <td class="col-xs-10">{{ test_case.test_id.split(".")[-1] }}</td>
+                            <td class="col-xs-1">
+                                <span class="label label-{{ status_tags[test_case.outcome] }}" style="display:block;width:40px;">
+                                    {%- if test_case.outcome == test_case.SUCCESS -%}
                                         Pass
-                                    {% elif test_case.outcome == test_case.SKIP %}
+                                    {%- elif test_case.outcome == test_case.SKIP -%}
                                         Skip
-                                    {% elif test_case.outcome == test_case.FAILURE %}
+                                    {%- elif test_case.outcome == test_case.FAILURE -%}
                                         Fail
-                                    {% else %}
+                                    {%- else -%}
                                         Error
-                                    {% endif %}
+                                    {%- endif -%}
                                 </span>
-                                {% if (test_case.stdout or test_case.err) and test_case.outcome != test_case.SKIP %}
-                                    &nbsp<button class="btn btn-default btn-xs">View</button>
-                                {% endif %}
+                            </td>
+                            <td class="col-xs-1">
+                                {%- if (test_case.stdout or test_case.err) %}
+                                <button class="btn btn-default btn-xs">View</button>
+                                {%- endif %}
                             </td>
                         </tr>
-                        {% if (test_case.stdout or test_case.err or test_case.err) and test_case.outcome != test_case.SKIP %}
-                            <tr style="display:none;">
-                                <td class="col-xs-9">
-                                    {% if test_case.stdout %}<p>{{ test_case.stdout }}</p>{% endif %}
-                                    {% if test_case.err %}<p style="color:maroon;">{{ test_case.err[0].__name__ }}: {{ test_case.err[1] }}</p>{% endif %}
-                                    {% if test_case.err %}<p style="color:maroon;">{{ test_case.test_exception_info }}</p>{% endif %}
-                                </td>
-                            </tr>
-                        {% endif %}
-                        {% endfor %}
+                        {%- if (test_case.stdout or test_case.err or test_case.err) and test_case.outcome != test_case.SKIP %}
+                        <tr style="display:none;">
+                            <td class="col-xs-9" colspan="3">
+                                {%- if test_case.stdout %}<p>{{ test_case.stdout }}</p>{% endif %}
+                                {%- if test_case.err %}<p style="color:maroon;">{{ test_case.err[0].__name__ }}: {{ test_case.err[1] }}</p>{% endif %}
+                                {%- if test_case.err %}<p style="color:maroon;">{{ test_case.test_exception_info }}</p>{% endif %}
+                            </td>
+                        </tr>
+                        {%- endif %}
+                        {%- if (test_case.stdout or test_case.err or test_case.err) and test_case.outcome == test_case.SKIP %}
+                        <tr style="display:none;">
+                            <td class="col-xs-9" colspan="3">
+                                {%- if test_case.stdout %}<p>{{ test_case.stdout }}</p>{% endif %}
+                                {%- if test_case.err %}<p style="color:maroon;">{{ test_case.err }}</p>{% endif %}
+                            </td>
+                        </tr>
+                        {%- endif %}
+                        {%- else %}
+                        <tr class='{{ status_tags[test_case.outcome] }}'>
+                            <td class="col-xs-10">{{ test_case.test_id.split(".")[-1] }}</td>
+                            <td class="col-xs-1">
+                                <span class="label label-{{ status_tags[test_case.outcome] }}" style="display:block;width:40px;">
+                                    {%- if test_case.outcome == test_case.SUCCESS -%}
+                                        Pass
+                                    {%- else -%}
+                                        Fail
+                                    {%- endif -%}
+                                </span>
+                            </td>
+                            <td class="col-xs-1">
+                                {%- if test_case.subtests %}
+                                <button class="btn btn-default btn-xs">View</button>
+                                {%- endif %}
+                            </td>
+                        </tr>
+                        {%- if test_case.subtests %}
+                        <tr style="display:none;">
+                            <td colspan="3">
+
+                                <table class='table table-hover table-responsive'>
+                                    <tbody>
+                                        {%- for subtest in test_case.subtests %}
+                                        <tr class='{{ status_tags[subtest.outcome] }}'>
+                                            <td class="col-xs-10">{{ subtest.test_id.split(".")[-1] }}</td>
+                                            <td class="col-xs-1">
+                                                <span class="label label-{{ status_tags[subtest.outcome] }}" style="display:block;width:40px;">
+                                                {%- if subtest.outcome == subtest.SUCCESS -%}
+                                                    Pass
+                                                {%- else -%}
+                                                    Fail
+                                                {%- endif -%}
+                                                </span>
+                                            </td>
+                                            <td class="col-xs-1">
+                                                {%- if subtest.stdout or subtest.err %}
+                                                <button class="btn btn-default btn-xs">View</button>
+                                                {%- endif %}
+                                            </td>
+                                        </tr>
+                                        {%- if subtest.stdout or subtest.err or subtest.err %}
+                                        <tr style="display:none;">
+                                            <td class="col-xs-9" colspan="3">
+                                                {%- if subtest.stdout %}<p>{{ subtest.stdout }}</p>{% endif %}
+                                                {%- if subtest.err %}<p style="color:maroon;">{{ subtest.err[0].__name__ }}: {{ subtest.err[1] }}</p>{% endif %}
+                                                {%- if subtest.err %}<p style="color:maroon;">{{ subtest.test_exception_info }}</p>{% endif %}
+                                            </td>
+                                        </tr>
+                                        {%- endif %}
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                        {%- endif %}
+                        {%- endif %}
+                        {%- endfor %}
                         <tr>
-                            <td>
+                            <td colspan="3">
                                 Total: {{ summaries[test_case_name].total }}, Pass: {{ summaries[test_case_name].success }}{% if summaries[test_case_name].failure %}, Fail: {{ summaries[test_case_name].failure }}{% endif %}{% if summaries[test_case_name].error %}, Error: {{ summaries[test_case_name].error }}{% endif %}{% if summaries[test_case_name].skip %}, Skip: {{ summaries[test_case_name].skip }}{% endif %} -- Duration: {{ summaries[test_case_name].duration }}
                             </td>
                         </tr>
@@ -67,14 +137,15 @@
                 </table>
             </div>
         </div>
-        {% endif %}
-        {% endfor %}
+        {%- endif %}
+        {%- endfor %}
     </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function(){
             $('td').on('click', '.btn', function(e){
                 e.preventDefault();
+                e.stopImmediatePropagation();
                 var $this = $(this);
                 var $nextRow = $this.closest('tr').next('tr');
                 $nextRow.slideToggle("fast");
