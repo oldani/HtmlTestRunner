@@ -30,6 +30,12 @@ class My_Tests(unittest.TestCase):
     def test_3(self):
         self.assertTrue(False)
 
+    def test_z_subs_pass(self):
+        for i in range(2):
+            with self.subTest(i=i):
+                print("i = {}".format(i))  # this won't appear for now
+                self.assertEqual(i, i)
+
 
 class MoreTests(unittest.TestCase):
     def test_1(self):
@@ -43,7 +49,6 @@ if __name__ == '__main__':
     more_tests = unittest.TestLoader().loadTestsFromTestCase(MoreTests)
     more_tests_ = unittest.TestLoader().loadTestsFromTestCase(MoreTests_)
     suite = unittest.TestSuite([tests, other_tests, more_tests, more_tests_])
-
     HTMLTestRunner(
         report_title='TEST COMBINED',
         report_name="MyReports",

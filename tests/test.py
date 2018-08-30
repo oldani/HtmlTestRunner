@@ -32,7 +32,7 @@ class TestStringMethods(unittest.TestCase):
         """ This test should be skipped. """
         pass
 
-    def test_subs(self):
+    def test_subs_fail(self):
         test_string = "test1"
         for i, char in enumerate(test_string):
             with self.subTest(i=i):

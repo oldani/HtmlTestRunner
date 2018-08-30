@@ -251,6 +251,7 @@ class HtmlTestResult(TextTestResult):
 
         tests_by_testcase = {}
 
+        subtest_names = set(self.subtests.keys())
         for test_name, subtests in self.subtests.items():
             subtest_info = _SubTestInfos(test_name, subtests)
             testcase_name = ".".join(test_name.split(".")[:-1])
@@ -260,7 +261,10 @@ class HtmlTestResult(TextTestResult):
 
         for tests in (self.successes, self.failures, self.errors, self.skipped):
             for test_info in tests:
-                if test_info.is_subtest:
+                # subtests will be contained by _SubTestInfos objects but there is also the
+                # case where all subtests pass and the method is added as a success as well
+                # which must be filtered out
+                if test_info.is_subtest or test_info.test_id in subtest_names:
                     continue
                 if isinstance(test_info, tuple):  # TODO: does this ever occur?
                     test_info = test_info[0]
@@ -329,9 +333,6 @@ class HtmlTestResult(TextTestResult):
 
     def _get_report_summaries(self, all_results, testRunner):
         """ Generate headers and summaries for all given test cases."""
-        start_time = testRunner.start_time
-        # elapsed_time = testRunner.time_taken.total_seconds()
-
         summaries = {}
         for test_case_class_name, test_case_tests in all_results.items():
             summaries[test_case_class_name] = self.get_results_summary(test_case_tests)
