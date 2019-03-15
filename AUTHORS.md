@@ -8,4 +8,4 @@
 
 ## Contributors
 
-None yet. Why not be the first?
+* James Sloan <james.m.t.sloan@gmail.com>
