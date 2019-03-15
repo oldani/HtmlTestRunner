@@ -34,3 +34,30 @@
 ## 1.1.2 (2018-01-27)
 
 * Minor fix
+
+
+## 1.2 (2019-03-15)
+
+* Fixed Template wording
+* Add support for combining reports into single report.
+* Add support for test cases with underscores in name.
+* Add optional timestamp of filenames.
+* Add optional automatic opening of generated reports in browser tab/
+* Add support for optional user variables to be passed to template.
+* Add tracebacks to reports.
+* Add stdout to reports.
+* Add print relative paths to generated reports
+* Made default output directory the current working directory so there are now no required args
+* Update and adjusted readme
+* Changed use of deprecated _TextTestResult -> TextTestResult
+* Changed format of template slightly
+expanded test case names to include full path to classes (should avoid clashes from * duplicate names)
+* Simply test method names
+* Update docstrings and deleted unused method
+* Add check for template_args to be dict-like
+* Add optional report naming
+* Add support for subtests
+* Add support for skipped tests skip reasons
+* Change template to support subtests in sub-tables
+* Fixed bug where non-combined tests had summaries with details from all tests
+* Tweaked format of HTML has that info buttons line up better
