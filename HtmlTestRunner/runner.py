@@ -3,7 +3,7 @@ import time
 from datetime import datetime
 
 from unittest import TextTestRunner
-from .result import _HtmlTestResult
+from .result import HtmlTestResult
 
 UTF8 = "UTF-8"
 
@@ -11,9 +11,13 @@ UTF8 = "UTF-8"
 class HTMLTestRunner(TextTestRunner):
     """" A test runner class that output the results. """
 
-    def __init__(self, output, verbosity=2, stream=sys.stderr,
+    time_format = "%Y-%m-%d_%H-%M-%S"
+
+    def __init__(self, output="./reports/", verbosity=2, stream=sys.stderr,
                  descriptions=True, failfast=False, buffer=False,
-                 report_title=None, template=None, resultclass=None):
+                 report_title=None, report_name=None, template=None, resultclass=None,
+                 add_timestamp=True, open_in_browser=False,
+                 combine_reports=False, template_args=None):
         self.verbosity = verbosity
         self.output = output
         self.encoding = UTF8
@@ -21,21 +25,34 @@ class HTMLTestRunner(TextTestRunner):
         TextTestRunner.__init__(self, stream, descriptions, verbosity,
                                 failfast=failfast, buffer=buffer)
 
-        self.outsuffix = time.strftime("%Y-%m-%d_%H-%M-%S")
-        self.elapsed_times = True
+        if add_timestamp:
+            self.timestamp = time.strftime(self.time_format)
+        else:
+            self.timestamp = ""
+
         if resultclass is None:
-            self.resultclass = _HtmlTestResult
+            self.resultclass = HtmlTestResult
         else:
             self.resultclass = resultclass
 
-        self.report_title = report_title or "Test Result"
+        if template_args is not None and not isinstance(template_args, dict):
+            raise ValueError("template_args must be a dict-like.")
+        self.template_args = template_args or {}
+
+        self.report_title = report_title or "Unittest Results"
+        self.report_name = report_name
         self.template = template
+
+        self.open_in_browser = open_in_browser
+        self.combine_reports = combine_reports
+
+        self.start_time = 0
+        self.time_taken = 0
 
     def _make_result(self):
         """ Create a TestResult object which will be used to store
         information about the executed tests. """
-        return self.resultclass(self.stream, self.descriptions, self.verbosity,
-                                self.elapsed_times)
+        return self.resultclass(self.stream, self.descriptions, self.verbosity)
 
     def run(self, test):
         """ Runs the given testcase or testsuite. """
@@ -81,9 +98,9 @@ class HTMLTestRunner(TextTestRunner):
             if skipped:
                 infos.append("Skipped={}".format(skipped))
             if expectedFails:
-                infos.append("expected failures={}".format(expectedFails))
+                infos.append("Expected Failures={}".format(expectedFails))
             if unexpectedSuccesses:
-                infos.append("unexpected successes={}".format(unexpectedSuccesses))
+                infos.append("Unexpected Successes={}".format(unexpectedSuccesses))
 
             if infos:
                 self.stream.writeln(" ({})".format(", ".join(infos)))
@@ -93,6 +110,10 @@ class HTMLTestRunner(TextTestRunner):
             self.stream.writeln()
             self.stream.writeln('Generating HTML reports... ')
             result.generate_reports(self)
+            if self.open_in_browser:
+                import webbrowser
+                for report in result.report_files:
+                    webbrowser.open_new_tab('file://' + report)
         finally:
             pass
         return result
