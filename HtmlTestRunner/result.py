@@ -360,10 +360,13 @@ class HtmlTestResult(TextTestResult):
                     **testRunner.template_args
                 )
                 # append test case name if multiple reports to be generated
-                if testRunner.report_name is None:
-                    report_name_body = self.default_prefix + test_case_class_name
+                if testRunner.report_name is not None:
+                    if len(all_results.values()) == 1:
+                        report_name_body = testRunner.report_name
+                    else:
+                        report_name_body = "{}_{}".format(testRunner.report_name, test_case_class_name)
                 else:
-                    report_name_body = "{}_{}".format(testRunner.report_name, test_case_class_name)
+                    report_name_body = self.default_prefix + test_case_class_name
                 self.generate_file(testRunner, report_name_body, html_file)
 
         else:
