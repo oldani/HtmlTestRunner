@@ -65,7 +65,7 @@ from setuptools import setup
 
 requirements = [
     # Package requirements here
-    "Jinja2==2.9.5"
+    "Jinja2>=2.10.1"
 ]
 
 test_requirements = [
