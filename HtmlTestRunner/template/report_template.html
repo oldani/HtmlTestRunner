@@ -57,7 +57,7 @@
                             <td class="col-xs-9" colspan="3">
                                 {%- if test_case.stdout %}<p>{{ test_case.stdout }}</p>{% endif %}
                                 {%- if test_case.err %}<p style="color:maroon;">{{ test_case.err[0].__name__ }}: {{ test_case.err[1] }}</p>{% endif %}
-                                {%- if test_case.err %}<p style="color:maroon;">{{ test_case.test_exception_info }}</p>{% endif %}
+                                {%- if test_case.err %}<pre style="color:maroon;">{{ test_case.test_exception_info }}</pre>{% endif %}
                             </td>
                         </tr>
                         {%- endif %}
@@ -115,7 +115,7 @@
                                         <tr style="display:none;">
                                             <td class="col-xs-9" colspan="3">
                                                 {%- if subtest.err %}<p style="color:maroon;">{{ subtest.err[0].__name__ }}: {{ subtest.err[1] }}</p>{% endif %}
-                                                {%- if subtest.err %}<p style="color:maroon;">{{ subtest.test_exception_info }}</p>{% endif %}
+                                                {%- if subtest.err %}<pre style="color:maroon;">{{ subtest.test_exception_info }}</pre>{% endif %}
                                             </td>
                                         </tr>
                                         {%- endif %}
