@@ -175,6 +175,7 @@ class HtmlTestResult(TextTestResult):
         if self.showAll:
             self.stream.write(" " + self.getDescription(test))
             self.stream.write(" ... ")
+            self.stream.flush()
 
     def _save_output_data(self):
         try:
