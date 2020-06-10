@@ -400,7 +400,7 @@ class HtmlTestResult(TextTestResult):
         path_file = os.path.abspath(os.path.join(dir_to, report_name))
         self.stream.writeln(os.path.relpath(path_file))
         self.report_files.append(path_file)
-        with open(path_file, 'w') as report_file:
+        with open(path_file, 'w', encoding='utf-8') as report_file:
             report_file.write(report)
 
     def _exc_info_to_string(self, err, test):
