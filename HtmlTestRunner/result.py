@@ -20,14 +20,14 @@ def load_template(template):
     file = None
     try:
         if template:
-            with open(template, "r") as f:
+            with open(template, "r", encoding="utf-8") as f:
                 file = f.read()
     except Exception as err:
         print("Error: Your Template wasn't loaded", err,
               "Loading Default Template", sep="\n")
     finally:
         if not file:
-            with open(DEFAULT_TEMPLATE, "r") as f:
+            with open(DEFAULT_TEMPLATE, "r", encoding="utf-8") as f:
                 file = f.read()
         return file
 
@@ -400,7 +400,7 @@ class HtmlTestResult(TextTestResult):
         path_file = os.path.abspath(os.path.join(dir_to, report_name))
         self.stream.writeln(os.path.relpath(path_file))
         self.report_files.append(path_file)
-        with open(path_file, 'w') as report_file:
+        with open(path_file, 'w', encoding="utf-8") as report_file:
             report_file.write(report)
 
     def _exc_info_to_string(self, err, test):
