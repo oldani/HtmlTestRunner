@@ -1,15 +1,14 @@
 from __future__ import print_function
 
+import copy
 import os
 import sys
 import time
-import copy
 import traceback
 from unittest import TestResult, TextTestResult
 from unittest.result import failfast
 
 from jinja2 import Template
-
 
 DEFAULT_TEMPLATE = os.path.join(os.path.dirname(__file__), "template", "report_template.html")
 
@@ -71,7 +70,7 @@ def strip_module_names(testcase_names):
 class _TestInfo(object):
     """" Keeps information about the execution of a test method. """
 
-    (SUCCESS, FAILURE, ERROR, SKIP) = range(4)
+    (SUCCESS, FAILURE, ERROR, SKIP, XFAIL, XPASS,) = range(6)
 
     def __init__(self, test_result, test_method, outcome=SUCCESS,
                  err=None, subTest=None):
@@ -86,7 +85,7 @@ class _TestInfo(object):
 
         self.test_description = self.test_result.getDescription(test_method)
         self.test_exception_info = (
-            '' if outcome in (self.SUCCESS, self.SKIP)
+            '' if outcome in (self.SUCCESS, self.SKIP, self.XPASS)
             else self.test_result._exc_info_to_string(
                 self.err, test_method))
 
@@ -235,6 +234,19 @@ class HtmlTestResult(TextTestResult):
         testinfo = self.infoclass(self, test, self.infoclass.SKIP, reason)
         self._prepare_callback(testinfo, self.skipped, "SKIP", "S")
 
+    def addExpectedFailure(self, test, err):
+        """Called when an expected failure/error occurred."""
+        self._save_output_data()
+        testinfo = self.infoclass(self, test, self.infoclass.XFAIL, err)
+        self._prepare_callback(testinfo, self.successes, "expected failure", "X")
+
+    @failfast
+    def addUnexpectedSuccess(self, test):
+        """Called when a test was expected to fail, but succeed."""
+        self._save_output_data()
+        self._prepare_callback(self.infoclass(self, test, self.infoclass.XPASS), self.successes, "unexpected success",
+                               "U")
+
     def printErrorList(self, flavour, errors):
         """
         Writes information about the FAIL or ERROR to the stream.
@@ -293,7 +305,7 @@ class HtmlTestResult(TextTestResult):
     def get_results_summary(self, tests):
         """Create a summary of the outcomes of all given tests."""
 
-        failures = errors = skips = successes = 0
+        failures = errors = skips = successes = expected_failure = unexpected_success = 0
         for test in tests:
             outcome = test.outcome
             if outcome == test.ERROR:
@@ -304,6 +316,10 @@ class HtmlTestResult(TextTestResult):
                 skips += 1
             elif outcome == test.SUCCESS:
                 successes += 1
+            elif outcome == test.XFAIL:
+                expected_failure += 1
+            elif outcome == test.XPASS:
+                unexpected_success += 1
 
         elapsed_time = 0
         for testinfo in tests:
@@ -319,6 +335,8 @@ class HtmlTestResult(TextTestResult):
             "failure": failures,
             "skip": skips,
             "success": successes,
+            "expected_failure": expected_failure,
+            "unexpected_success": unexpected_success,
             "duration": self._format_duration(elapsed_time)
         }
 
@@ -343,7 +361,7 @@ class HtmlTestResult(TextTestResult):
 
     def generate_reports(self, testRunner):
         """ Generate report(s) for all given test cases that have been run. """
-        status_tags = ('success', 'danger', 'warning', 'info')
+        status_tags = ('success', 'danger', 'warning', 'info', 'info', 'warning')
         all_results = self._get_info_by_testcase()
         summaries = self._get_report_summaries(all_results, testRunner)
 
