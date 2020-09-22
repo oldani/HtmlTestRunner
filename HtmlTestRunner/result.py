@@ -238,13 +238,13 @@ class HtmlTestResult(TextTestResult):
         """Called when an expected failure/error occurred."""
         self._save_output_data()
         testinfo = self.infoclass(self, test, self.infoclass.XFAIL, err)
-        self._prepare_callback(testinfo, self.successes, "expected failure", "X")
+        self._prepare_callback(testinfo, self.expectedFailures, "expected failure", "X")
 
     @failfast
     def addUnexpectedSuccess(self, test):
         """Called when a test was expected to fail, but succeed."""
         self._save_output_data()
-        self._prepare_callback(self.infoclass(self, test, self.infoclass.XPASS), self.successes, "unexpected success",
+        self._prepare_callback(self.infoclass(self, test, self.infoclass.XPASS), self.unexpectedSuccesses, "unexpected success",
                                "U")
 
     def printErrorList(self, flavour, errors):
@@ -273,7 +273,7 @@ class HtmlTestResult(TextTestResult):
                 tests_by_testcase[testcase_name] = []
             tests_by_testcase[testcase_name].append(subtest_info)
 
-        for tests in (self.successes, self.failures, self.errors, self.skipped):
+        for tests in (self.successes, self.failures, self.errors, self.skipped, self.expectedFailures, self.unexpectedSuccesses):
             for test_info in tests:
                 # subtests will be contained by _SubTestInfos objects but there is also the
                 # case where all subtests pass and the method is added as a success as well
