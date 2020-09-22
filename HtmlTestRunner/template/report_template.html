@@ -13,7 +13,14 @@
                 <h2 class="text-capitalize">{{ title }}</h2>
                 <p class='attribute'><strong>Start Time: </strong>{{ header_info.start_time.strftime("%Y-%m-%d %H:%M:%S") }}</p>
                 <p class='attribute'><strong>Duration: </strong>{{ header_info.status.duration }}</p>
-                <p class='attribute'><strong>Summary: </strong>Total: {{ header_info.status.total }}, Pass: {{ header_info.status.success }}{% if header_info.status.failure %}, Fail: {{ header_info.status.failure }}{% endif %}{% if header_info.status.error %}, Error: {{ header_info.status.error }}{% endif %}{% if header_info.status.skip %}, Skip: {{ header_info.status.skip }}{% endif %}</p>
+                <p class='attribute'><strong>Summary: </strong>Total: {{ header_info.status.total }}, Pass: {{ header_info.status.success }}
+                    {% if header_info.status.failure %}, Fail: {{ header_info.status.failure }}{% endif %}
+                    {% if header_info.status.error %}, Error: {{ header_info.status.error }}{% endif %}
+                    {% if header_info.status.skip %}, Skip: {{ header_info.status.skip }}{% endif %}
+                    {% if header_info.status.expected_failure %}, XFail: {{ header_info.status.expected_failure }}{% endif %}
+                    {% if header_info.status.unexpected_success %}, XPass: {{ header_info.status.unexpected_success }}{% endif %}
+                </p>
+                <p class='attribute'><strong>Tester: </strong> {{ tester }}</p>
             </div>
         </div>
         {%- for test_case_name, tests_results in all_results.items() %}
@@ -34,15 +41,21 @@
                         <tr class='{{ status_tags[test_case.outcome] }}'>
                             <td class="col-xs-10">{{ test_case.test_id.split(".")[-1] }}</td>
                             <td class="col-xs-1">
-                                <span class="label label-{{ status_tags[test_case.outcome] }}" style="display:block;width:40px;">
+                                <span class="label label-{{ status_tags[test_case.outcome] }}" style="display:block;width:45px;">
                                     {%- if test_case.outcome == test_case.SUCCESS -%}
                                         Pass
                                     {%- elif test_case.outcome == test_case.SKIP -%}
                                         Skip
                                     {%- elif test_case.outcome == test_case.FAILURE -%}
                                         Fail
-                                    {%- else -%}
+                                    {%- elif test_case.outcome == test_case.ERROR -%}
                                         Error
+                                    {%- elif test_case.outcome == test_case.XFAIL -%}
+                                        XFail
+                                    {%- elif test_case.outcome == test_case.XPASS -%}
+                                        XPass
+                                    {%- else -%}
+                                        Other
                                     {%- endif -%}
                                 </span>
                             </td>
@@ -129,7 +142,13 @@
                         {%- endfor %}
                         <tr>
                             <td colspan="3">
-                                Total: {{ summaries[test_case_name].total }}, Pass: {{ summaries[test_case_name].success }}{% if summaries[test_case_name].failure %}, Fail: {{ summaries[test_case_name].failure }}{% endif %}{% if summaries[test_case_name].error %}, Error: {{ summaries[test_case_name].error }}{% endif %}{% if summaries[test_case_name].skip %}, Skip: {{ summaries[test_case_name].skip }}{% endif %} -- Duration: {{ summaries[test_case_name].duration }}
+                                Total: {{ summaries[test_case_name].total }}, Pass: {{ summaries[test_case_name].success }}
+                                {% if summaries[test_case_name].failure %}, Fail: {{ summaries[test_case_name].failure }}{% endif %}
+                                {% if summaries[test_case_name].error %}, Error: {{ summaries[test_case_name].error }}{% endif %}
+                                {% if summaries[test_case_name].skip %}, Skip: {{ summaries[test_case_name].skip }}{% endif %}
+                                {% if summaries[test_case_name].expected_failure %}, XFail: {{ summaries[test_case_name].expected_failure }}{% endif %}
+                                {% if summaries[test_case_name].unexpected_success %}, XPass: {{ header_info.status.unexpected_success }}{% endif %}
+                                -- Duration: {{ summaries[test_case_name].duration }}
                             </td>
                         </tr>
                     </tbody>
@@ -159,4 +178,4 @@
         });
     </script>
 </body>
-</html
+</html>
