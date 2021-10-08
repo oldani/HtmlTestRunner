@@ -169,7 +169,7 @@ class HtmlTestResult(TextTestResult):
         if self.descriptions and doc_first_line:
             return doc_first_line
         else:
-            return str(test)
+            return ''
 
     def startTest(self, test):
         """ Called before execute each method. """
