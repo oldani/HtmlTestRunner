@@ -164,8 +164,12 @@ class HtmlTestResult(TextTestResult):
         self.callback = callback
 
     def getDescription(self, test):
-        """ Return the test description if not have test name. """
-        return str(test)
+        """ Return the test description if it has one, otherwise return the test name. """
+        doc_first_line = test.shortDescription()
+        if self.descriptions and doc_first_line:
+            return doc_first_line
+        else:
+            return str(test)
 
     def startTest(self, test):
         """ Called before execute each method. """
