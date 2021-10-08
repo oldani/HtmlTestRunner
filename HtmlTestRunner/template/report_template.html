@@ -32,7 +32,7 @@
                         {%- for test_case in tests_results %}
                         {%- if not test_case.subtests is defined %}
                         <tr class='{{ status_tags[test_case.outcome] }}'>
-                            <td class="col-xs-10">{{ test_case.test_id.split(".")[-1] }}</td>
+                            <td class="col-xs-10">{{ test_case.test_description or test_case.test_id.split(".")[-1]}}</td>
                             <td class="col-xs-1">
                                 <span class="label label-{{ status_tags[test_case.outcome] }}" style="display:block;width:40px;">
                                     {%- if test_case.outcome == test_case.SUCCESS -%}
@@ -71,7 +71,7 @@
                         {%- endif %}
                         {%- else %}
                         <tr class='{{ status_tags[test_case.outcome] }}'>
-                            <td class="col-xs-10">{{ test_case.test_id.split(".")[-1] }}</td>
+                            <td class="col-xs-10">{{ test_case.test_description or test_case.test_id.split(".")[-1] }}</td>
                             <td class="col-xs-1">
                                 <span class="label label-{{ status_tags[test_case.outcome] }}" style="display:block;width:40px;">
                                     {%- if test_case.outcome == test_case.SUCCESS -%}
@@ -95,7 +95,7 @@
                                     <tbody>
                                         {%- for subtest in test_case.subtests %}
                                         <tr class='{{ status_tags[subtest.outcome] }}'>
-                                            <td class="col-xs-10">{{ subtest.test_id.split(".")[-1] }}</td>
+                                            <td class="col-xs-10">{{ subtest.test_description or test_case.test_id.split(".")[-1] }}</td>
                                             <td class="col-xs-1">
                                                 <span class="label label-{{ status_tags[subtest.outcome] }}" style="display:block;width:40px;">
                                                 {%- if subtest.outcome == subtest.SUCCESS -%}
