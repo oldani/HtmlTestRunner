@@ -192,6 +192,9 @@ class HtmlTestResult(TextTestResult):
         if self.callback and callable(self.callback):
             self.callback()
             self.callback = None
+            
+        if hasattr(test, 'screenshot'):
+            self.images[test._testMethodName] = test.screenshot
 
     def addSuccess(self, test):
         """ Called when a test executes successfully. """
