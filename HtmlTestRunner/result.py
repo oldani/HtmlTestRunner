@@ -144,6 +144,7 @@ class HtmlTestResult(TextTestResult):
         self.callback = None
         self.infoclass = _TestInfo
         self.report_files = []
+        self.images = {}
 
     def _prepare_callback(self, test_info, target_list, verbose_str,
                           short_str):
