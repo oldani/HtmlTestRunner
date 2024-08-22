@@ -422,8 +422,7 @@ class HtmlTestResult(TextTestResult):
 
         if exctype is test.failureException:
             # Skip assert*() traceback levels
-            length = self._count_relevant_tb_levels(tb)
-            msg_lines = traceback.format_exception(exctype, value, tb, length)
+            msg_lines = traceback.format_exception(exctype, value, tb)
         else:
             msg_lines = traceback.format_exception(exctype, value, tb)
 
